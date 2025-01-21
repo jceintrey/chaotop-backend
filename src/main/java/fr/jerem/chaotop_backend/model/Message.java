@@ -13,11 +13,26 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+/**
+ * Represents a message entity in the database.
+ * <p>
+ * This class is mapped to the {@code messages} table in the database, and
+ * contains
+ * the message's information including the message, the creation and update
+ * dates, and the user and rental defined as foreign keys in the database.
+ * </p>
+ * 
+ * Lombock is used to generate Getters/Setters and the empty constructor needed
+ * by JPA.
+ * 
+ */
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
-@Table(name = "MESSAGES")
+@Table(name = "messages")
 public class Message {
 
     @Id
@@ -31,7 +46,7 @@ public class Message {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private DBUser user;
 
     @Column(name = "message", length = 2000)
     private String message;
