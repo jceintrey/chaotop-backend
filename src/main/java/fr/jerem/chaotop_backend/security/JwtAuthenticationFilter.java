@@ -40,39 +40,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @SuppressWarnings("null") HttpServletResponse response,
             @SuppressWarnings("null") FilterChain filterChain)
             throws ServletException, IOException {
+        logger.debug("Executing doFilterInternal");
 
-        // Récupérer l'en-tête Authorization
+        // Get Authorization header
         String authorizationHeader = request.getHeader("Authorization");
 
-        // Vérifier si l'en-tête contient un token JWT valide
+        // Verify if header contains a valid JWT
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
             try {
 
                 Jwt jwt = this.jwtService.decode(token);
-                logger.info("Token is valid");
 
-                // Récupérer le sujet (username)
+                // Get the username
                 String username = jwt.getSubject();
 
-                // Récupérer les métadonnées
-                @SuppressWarnings("null")
-                String tokenValidFrom = (jwt.getIssuedAt() != null) ? jwt.getIssuedAt().toString() : "N/A";
-                @SuppressWarnings("null")
-                String tokenExpireAt = (jwt.getExpiresAt() != null) ? jwt.getExpiresAt().toString() : "N/A";
-
-                logger.info("Validité du token Depuis:{} Jusqu'a:{}", tokenValidFrom, tokenExpireAt);
-
-                // Extraire les rôles
+                // Build autorities
                 String rolesClaim = jwt.getClaim("roles");
                 List<GrantedAuthority> authorities;
 
                 if (rolesClaim != null) {
-                    // Convertir la chaîne de rôle en liste d'autorités
                     authorities = List.of(new SimpleGrantedAuthority(rolesClaim));
                 } else {
                     logger.warn("No roles found in the token for user: {}", username);
-                    authorities = List.of(new SimpleGrantedAuthority("USER")); // Rôle par défaut
+                    authorities = List.of(new SimpleGrantedAuthority("USER"));
                 }
 
                 UserDetails userDetails = User.builder()
@@ -81,18 +72,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .authorities(authorities)
                         .build();
 
-                // Créer une authentification et la définir dans le contexte de sécurité
+                // Add authentication to Spring context
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                logger.debug("Authentication of {} successfully added to SecurityContext.", userDetails.getUsername());
+
             } catch (JwtException ex) {
                 logger.error("Invalid JWT token", ex);
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.getWriter().write("{\"error\": \"Invalid token\"}");
                 return;
             }
-        }
 
+        }
         filterChain.doFilter(request, response);
     }
 }

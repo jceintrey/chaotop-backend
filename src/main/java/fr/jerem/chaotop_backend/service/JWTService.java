@@ -43,8 +43,12 @@ public class JWTService {
 
         SecretKeySpec secretKey = new SecretKeySpec(getByteKey(), "HmacSHA256");
         this.jwtDecoder = NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS256).build();
+        logger.trace("jwtEncoder created: {}", this.jwtDecoder.toString());
 
         this.jwtEncoder = new NimbusJwtEncoder(new ImmutableSecret<>(getByteKey()));
+        logger.trace("jwtEncoder created: {}", this.jwtEncoder.toString());
+        logger.trace("JWTService constructor called. Secret key length: {}", this.jwtEncoder.toString());
+        logger.debug("JWTService initialized with secret key.");
     }
 
     /**
@@ -52,12 +56,14 @@ public class JWTService {
      * rules applied to HTTP requests.
      * 
      * 
-     * @param authentication the {@link Authentication} object used to build the token
-     * @return the generated {@link String} 
+     * @param authentication the {@link Authentication} object used to build the
+     *                       token
+     * @return the generated {@link String}
      * @throws Exception if there is an error during generation
      */
     public String generateToken(Authentication authentication) throws Exception {
-        logger.info("generate Token for authentication :" + authentication.toString());
+        logger.debug("Generating token for user: {}", authentication.getName());
+
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
@@ -70,25 +76,46 @@ public class JWTService {
         JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters
                 .from(JwsHeader.with(MacAlgorithm.HS256).build(), claims);
 
-        return encode(jwtEncoderParameters);
+        try {
+            String token = encode(jwtEncoderParameters);
+            logger.debug("Token successfully generated for {} : {}", authentication.getName(),token);
+            return token;
+        } catch (Exception e) {
+            logger.error("Error generating token for user: {}", authentication.getName(), e);
+            throw e;
+        }
     }
 
     public Jwt decode(String token) {
-        return this.getJwtDecoder().decode(token);
+        logger.debug("Decoding token: {}", token);
+        try {
+            Jwt jwt = this.getJwtDecoder().decode(token);
+            logger.debug("Token successfully decoded.");
+            return jwt;
+        } catch (Exception e) {
+            logger.error("Failed to decode token.", e);
+            throw e;
+        }
     }
 
     public String encode(JwtEncoderParameters jwtEncoderParameters) {
-        return this.getJwtEncoder().encode(jwtEncoderParameters).getTokenValue();
+        logger.debug("Encoding JWT with claims: {}", jwtEncoderParameters.getClaims());
+        try {
+            String token = this.getJwtEncoder().encode(jwtEncoderParameters).getTokenValue();
+            logger.debug("Token successfully encoded.");
+            return token;
+        } catch (Exception e) {
+            logger.error("Error encoding JWT.", e);
+            throw e;
+        }
     }
 
     private JwtDecoder getJwtDecoder() {
-
         return this.jwtDecoder;
 
     }
 
     private JwtEncoder getJwtEncoder() {
-
         return this.jwtEncoder;
 
     }
