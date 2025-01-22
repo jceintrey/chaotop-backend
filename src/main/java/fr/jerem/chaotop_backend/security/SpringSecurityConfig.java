@@ -3,8 +3,6 @@ package fr.jerem.chaotop_backend.security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,23 +12,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.nimbusds.jose.jwk.source.ImmutableSecret;
-
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-import javax.crypto.spec.SecretKeySpec;
-
 import fr.jerem.chaotop_backend.service.CustomUserDetailsService;
-import fr.jerem.chaotop_backend.service.JWTService;
 
 /**
  * Configuration class for Spring Security settings.
@@ -56,14 +44,11 @@ public class SpringSecurityConfig {
 
     private OncePerRequestFilter jwtAuthenticationFilter;
     private UserDetailsService customUserDetailsService;
-    private JWTService jwtService;
 
     public SpringSecurityConfig(@Lazy OncePerRequestFilter jwtAuthenticationFilter,
-            UserDetailsService customUserDetailsService,
-            JWTService jwtService) {
+            UserDetailsService customUserDetailsService) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.customUserDetailsService = customUserDetailsService;
-        this.jwtService = jwtService;
 
     }
 
@@ -95,6 +80,10 @@ public class SpringSecurityConfig {
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilter(jwtAuthenticationFilter)
+
+                // .addFilterBefore(jwtAuthenticationFilter,
+                // AnonymousAuthenticationFilter.class)
                 .build();
 
     }
@@ -139,13 +128,14 @@ public class SpringSecurityConfig {
         return authenticationManagerBuilder.build();
     }
 
-    @Bean
-    public JwtDecoder jwtDecoder() {
-        return jwtService.getJwtDecoder();
-    }
+    // @Bean
+    // public JwtDecoder jwtDecoder() {
+    // return jwtService.getJwtDecoder();
+    // }
 
-    @Bean
-    public JwtEncoder jwtEncoder() {
-        return jwtService.getJwtEncoder();
-    }
+    // @Bean
+    // public JwtEncoder jwtEncoder() {
+    // return jwtService.getJwtEncoder();
+    // }
+
 }

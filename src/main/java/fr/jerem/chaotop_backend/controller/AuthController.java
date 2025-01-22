@@ -36,28 +36,51 @@ public class AuthController {
 
     }
 
+    /**
+     * Mapping with POST method used to request a token to consum the api
+     * 
+     * <p>
+     * This method first authenticate the Post request mapped to the DTO LoginRequest
+     * and then authenticate the user credentials.
+     * If authentication is ok, generate and return a token in the DTO TokenResponse
+     * 
+     * @return {@link ResponseEntity<TokenResponse>}
+     */
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
         try {
+            // Authenticate against tha authenticationManager the user credentials from POST
+            // request
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPassword()));
+            logger.debug("@PostMapping(\"/login\") User is authenticated \n" + authentication.toString());
 
-            logger.info("/login->construction de l'authentification \n" + authentication.toString());
             String token = jwtService.generateToken(authentication);
-
-            // Retourner la réponse dans un DTO structuré
+            logger.debug("Token has been generated " + token);
+            // Construct a Token response
             TokenResponse response = new TokenResponse();
-            logger.info(token);
-
             response.setToken(token);
 
             return ResponseEntity.ok(response);
-        } catch (AuthenticationException ex) {
+        } catch (AuthenticationException e) {
+            logger.debug("@PostMapping(\"/login\") error during user authentication \n" + e);
+
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new TokenResponse());
+        } catch (Exception e) {
+            logger.debug("An exeption has occured " + e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new TokenResponse());
+
         }
     }
 
+    /**
+     * Mapping with Get method used to check the api connectivity
+     * 
+     * @return {@link ResponseEntity<Map<String, String>>}
+     * 
+     */
     @GetMapping("/status")
     public ResponseEntity<Map<String, String>> getStatus() {
         return ResponseEntity.ok(Collections.singletonMap("apistatus", "ok"));
