@@ -43,10 +43,10 @@ import fr.jerem.chaotop_backend.service.CustomUserDetailsService;
 public class SpringSecurityConfig {
 
     private OncePerRequestFilter jwtAuthenticationFilter;
-    private UserDetailsService customUserDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
 
     public SpringSecurityConfig(@Lazy OncePerRequestFilter jwtAuthenticationFilter,
-            UserDetailsService customUserDetailsService) {
+    CustomUserDetailsService customUserDetailsService) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.customUserDetailsService = customUserDetailsService;
 

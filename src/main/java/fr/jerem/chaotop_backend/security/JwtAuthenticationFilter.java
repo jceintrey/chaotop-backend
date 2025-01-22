@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import fr.jerem.chaotop_backend.service.CustomUserDetailsService;
 import fr.jerem.chaotop_backend.service.JWTService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,9 +29,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private final JWTService jwtService;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    public JwtAuthenticationFilter(JWTService jwtService) {
+    public JwtAuthenticationFilter(JWTService jwtService, CustomUserDetailsService customUserDetailsService) {
         this.jwtService = jwtService;
+        this.customUserDetailsService = customUserDetailsService;
 
     }
 
@@ -44,16 +47,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Get Authorization header
         String authorizationHeader = request.getHeader("Authorization");
-
+        logger.trace("authorizationHeader {}", authorizationHeader);
         // Verify if header contains a valid JWT
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
+            logger.trace("token {}", token);
             try {
 
                 Jwt jwt = this.jwtService.decode(token);
 
                 // Get the username
                 String username = jwt.getSubject();
+
+                // Get user details from the database via CustomUserDetailsService
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
                 // Build autorities
                 String rolesClaim = jwt.getClaim("roles");
@@ -66,11 +73,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     authorities = List.of(new SimpleGrantedAuthority("USER"));
                 }
 
-                UserDetails userDetails = User.builder()
-                        .username(username)
-                        .password("")
-                        .authorities(authorities)
-                        .build();
+                // UserDetails userDetails = User.builder()
+                // .username(username)
+                // .password("")
+                // .authorities(authorities)
+                // .build();
 
                 // Add authentication to Spring context
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
@@ -79,7 +86,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 logger.debug("Authentication of {} successfully added to SecurityContext.", userDetails.getUsername());
 
             } catch (JwtException ex) {
-                logger.error("Invalid JWT token", ex);
+                logger.error("Invalid JWT token");
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.getWriter().write("{\"error\": \"Invalid token\"}");
                 return;

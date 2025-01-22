@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import fr.jerem.chaotop_backend.model.CustomUserDetails;
 import fr.jerem.chaotop_backend.model.DBUser;
 import fr.jerem.chaotop_backend.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -57,7 +58,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         /*
          * TODO implement RBAC later with a dedicated role table
          */
-        return new User(user.getEmail(), user.getPassword(), getGrantedAuthorities("USER"));
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
+        }
+
+        return new CustomUserDetails(user);
 
     }
 

@@ -63,12 +63,13 @@ public class JWTService {
      */
     public String generateToken(Authentication authentication) throws Exception {
         logger.debug("Generating token for user: {}", authentication.getName());
+        logger.trace("", authentication);
 
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
-                .expiresAt(now.plus(1, ChronoUnit.MINUTES))
+                .expiresAt(now.plus(1, ChronoUnit.HOURS))
                 .subject(authentication.getName())
                 .claim("roles", "USER")
                 .build();
@@ -78,7 +79,7 @@ public class JWTService {
 
         try {
             String token = encode(jwtEncoderParameters);
-            logger.debug("Token successfully generated for {} : {}", authentication.getName(),token);
+            logger.debug("Token successfully generated for {} : {}", authentication.getName(), token);
             return token;
         } catch (Exception e) {
             logger.error("Error generating token for user: {}", authentication.getName(), e);
