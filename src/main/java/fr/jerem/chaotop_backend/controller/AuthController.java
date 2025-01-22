@@ -33,6 +33,7 @@ public class AuthController {
     public AuthController(AuthenticationManager authenticationManager, JWTService jwtService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        logger.debug("AuthController initialized.");
 
     }
 
@@ -40,7 +41,8 @@ public class AuthController {
      * Mapping with POST method used to request a token to consum the api
      * 
      * <p>
-     * This method first authenticate the Post request mapped to the DTO LoginRequest
+     * This method first authenticate the Post request mapped to the DTO
+     * LoginRequest
      * and then authenticate the user credentials.
      * If authentication is ok, generate and return a token in the DTO TokenResponse
      * 
@@ -49,29 +51,29 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
         try {
-            // Authenticate against tha authenticationManager the user credentials from POST
-            // request
+            logger.debug("@PostMapping(\"/login\") - LoginRequest: {}", request.getLogin());
+
+            // Authenticate with user credentials
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPassword()));
-            logger.debug("@PostMapping(\"/login\") User is authenticated \n" + authentication.toString());
 
+            // Generate token
             String token = jwtService.generateToken(authentication);
-            logger.debug("Token has been generated " + token);
-            // Construct a Token response
+
+            // Build and return the Token response
             TokenResponse response = new TokenResponse();
             response.setToken(token);
-
+            logger.debug("@PostMapping(\"/login\") - success for: {}", request.getLogin());
             return ResponseEntity.ok(response);
-        } catch (AuthenticationException e) {
-            logger.debug("@PostMapping(\"/login\") error during user authentication \n" + e);
 
+        } catch (AuthenticationException e) {
+            logger.error("@PostMapping(\"/login\") error during user authentication \n" + e);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new TokenResponse());
         } catch (Exception e) {
-            logger.debug("An exeption has occured " + e);
+            logger.error("An exeption has occured " + e);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new TokenResponse());
-
         }
     }
 
@@ -83,6 +85,7 @@ public class AuthController {
      */
     @GetMapping("/status")
     public ResponseEntity<Map<String, String>> getStatus() {
+        logger.debug("@GetMapping(\"/status\")");
         return ResponseEntity.ok(Collections.singletonMap("apistatus", "ok"));
     }
 }

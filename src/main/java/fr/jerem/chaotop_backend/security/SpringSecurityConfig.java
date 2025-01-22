@@ -72,7 +72,8 @@ public class SpringSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        logger.info("Execute filterChain :\n" + http.toString());
+        logger.debug("Processing filterChain :\n" + http.toString());
+
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
@@ -127,15 +128,5 @@ public class SpringSecurityConfig {
         authenticationManagerBuilder.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
     }
-
-    // @Bean
-    // public JwtDecoder jwtDecoder() {
-    // return jwtService.getJwtDecoder();
-    // }
-
-    // @Bean
-    // public JwtEncoder jwtEncoder() {
-    // return jwtService.getJwtEncoder();
-    // }
 
 }
