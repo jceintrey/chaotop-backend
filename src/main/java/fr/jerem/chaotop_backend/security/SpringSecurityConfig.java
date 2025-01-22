@@ -1,19 +1,22 @@
-package fr.jerem.chaotop_backend.configuration;
-
-import static org.springframework.security.config.Customizer.withDefaults;
+package fr.jerem.chaotop_backend.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import fr.jerem.chaotop_backend.service.CustomUserDetailsService;
 
@@ -39,8 +42,15 @@ import fr.jerem.chaotop_backend.service.CustomUserDetailsService;
 @EnableWebSecurity
 public class SpringSecurityConfig {
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private OncePerRequestFilter jwtAuthenticationFilter;
+    private UserDetailsService customUserDetailsService;
+
+    public SpringSecurityConfig(@Lazy OncePerRequestFilter jwtAuthenticationFilter,
+            UserDetailsService customUserDetailsService) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.customUserDetailsService = customUserDetailsService;
+
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(SpringSecurityConfig.class);
 
@@ -59,17 +69,23 @@ public class SpringSecurityConfig {
      * @return the configured {@link SecurityFilterChain} bean
      * @throws Exception if there is a configuration error
      */
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        logger.info("Initializing SecurityFilterChain in Spring Context");
-        http
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        logger.info("Execute filterChain :\n" + http.toString());
+        return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
                         .anyRequest().authenticated())
-                .formLogin(withDefaults())
-                .logout(withDefaults());
-        return http.build();
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilter(jwtAuthenticationFilter)
+
+                // .addFilterBefore(jwtAuthenticationFilter,
+                // AnonymousAuthenticationFilter.class)
+                .build();
+
     }
 
     /**
@@ -111,4 +127,15 @@ public class SpringSecurityConfig {
         authenticationManagerBuilder.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
     }
+
+    // @Bean
+    // public JwtDecoder jwtDecoder() {
+    // return jwtService.getJwtDecoder();
+    // }
+
+    // @Bean
+    // public JwtEncoder jwtEncoder() {
+    // return jwtService.getJwtEncoder();
+    // }
+
 }

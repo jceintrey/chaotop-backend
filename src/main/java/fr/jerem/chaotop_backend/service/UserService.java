@@ -32,7 +32,7 @@ public class UserService {
     public void createUser(String email, String plainPassword, String name) {
         DBUser user = new DBUser();
         user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(plainPassword)); // Hachage du mot de passe
+        user.setPassword(passwordEncoder.encode(plainPassword));
         user.setName(name);
 
         userRepository.save(user);
