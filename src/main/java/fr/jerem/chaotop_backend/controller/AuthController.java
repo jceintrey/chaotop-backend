@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,8 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,7 +32,6 @@ public class AuthController {
 
     private AuthenticationManager authenticationManager;
     private JWTService jwtService;
-    private CustomUserDetailsService customUserDetailsService;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
@@ -42,7 +39,6 @@ public class AuthController {
             CustomUserDetailsService customUserDetailsService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
-        this.customUserDetailsService = customUserDetailsService;
         logger.debug("AuthController initialized.");
 
     }
@@ -109,21 +105,14 @@ public class AuthController {
     public ResponseEntity<MeResponse> getUserInformations() {
         logger.debug("@GetMapping(\"/me\")");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Object principal = authentication.getPrincipal();
-
-        // Vérifiez le type de l'objet principal
-        if (!(principal instanceof CustomUserDetails)) {
-            throw new RuntimeException("Unexpected principal type: " + principal.getClass());
-        }
-        String email = authentication.getName();
         CustomUserDetails userDetail = (CustomUserDetails) authentication.getPrincipal();
-
+    
         MeResponse meResponse = new MeResponse();
         meResponse.setName(userDetail.getName());
         meResponse.setEmail(userDetail.getEmail());
         meResponse.setCreated_at(userDetail.getCreatedAt().toString());
         meResponse.setUpdated_at(userDetail.getUpdatedAt().toString());
-
+        logger.debug("Return response: {}", meResponse.toString());
         return ResponseEntity.ok(meResponse);
     }
 }

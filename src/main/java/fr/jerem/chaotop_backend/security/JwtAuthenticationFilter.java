@@ -1,16 +1,12 @@
 package fr.jerem.chaotop_backend.security;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtException;
@@ -62,22 +58,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Get user details from the database via CustomUserDetailsService
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
-                // Build autorities
-                String rolesClaim = jwt.getClaim("roles");
-                List<GrantedAuthority> authorities;
-
-                if (rolesClaim != null) {
-                    authorities = List.of(new SimpleGrantedAuthority(rolesClaim));
-                } else {
-                    logger.warn("No roles found in the token for user: {}", username);
-                    authorities = List.of(new SimpleGrantedAuthority("USER"));
-                }
-
-                // UserDetails userDetails = User.builder()
-                // .username(username)
-                // .password("")
-                // .authorities(authorities)
-                // .build();
 
                 // Add authentication to Spring context
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
