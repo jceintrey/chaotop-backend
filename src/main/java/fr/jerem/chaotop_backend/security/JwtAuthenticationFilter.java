@@ -1,22 +1,19 @@
 package fr.jerem.chaotop_backend.security;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import fr.jerem.chaotop_backend.service.CustomUserDetailsService;
 import fr.jerem.chaotop_backend.service.JWTService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,9 +25,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private final JWTService jwtService;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    public JwtAuthenticationFilter(JWTService jwtService) {
+    public JwtAuthenticationFilter(JWTService jwtService, CustomUserDetailsService customUserDetailsService) {
         this.jwtService = jwtService;
+        this.customUserDetailsService = customUserDetailsService;
 
     }
 
@@ -44,10 +43,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Get Authorization header
         String authorizationHeader = request.getHeader("Authorization");
-
+        logger.trace("authorizationHeader {}", authorizationHeader);
         // Verify if header contains a valid JWT
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
+            logger.trace("token {}", token);
             try {
 
                 Jwt jwt = this.jwtService.decode(token);
@@ -55,22 +55,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Get the username
                 String username = jwt.getSubject();
 
-                // Build autorities
-                String rolesClaim = jwt.getClaim("roles");
-                List<GrantedAuthority> authorities;
+                // Get user details from the database via CustomUserDetailsService
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
-                if (rolesClaim != null) {
-                    authorities = List.of(new SimpleGrantedAuthority(rolesClaim));
-                } else {
-                    logger.warn("No roles found in the token for user: {}", username);
-                    authorities = List.of(new SimpleGrantedAuthority("USER"));
-                }
-
-                UserDetails userDetails = User.builder()
-                        .username(username)
-                        .password("")
-                        .authorities(authorities)
-                        .build();
 
                 // Add authentication to Spring context
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
@@ -79,7 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 logger.debug("Authentication of {} successfully added to SecurityContext.", userDetails.getUsername());
 
             } catch (JwtException ex) {
-                logger.error("Invalid JWT token", ex);
+                logger.error("Invalid JWT token");
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.getWriter().write("{\"error\": \"Invalid token\"}");
                 return;

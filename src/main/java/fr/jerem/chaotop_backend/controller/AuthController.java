@@ -11,6 +11,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.jerem.chaotop_backend.dto.LoginRequest;
+import fr.jerem.chaotop_backend.dto.MeResponse;
 import fr.jerem.chaotop_backend.dto.TokenResponse;
+import fr.jerem.chaotop_backend.model.CustomUserDetails;
+import fr.jerem.chaotop_backend.service.CustomUserDetailsService;
 import fr.jerem.chaotop_backend.service.JWTService;
 
 @RestController
@@ -30,7 +35,8 @@ public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-    public AuthController(AuthenticationManager authenticationManager, JWTService jwtService) {
+    public AuthController(AuthenticationManager authenticationManager, JWTService jwtService,
+            CustomUserDetailsService customUserDetailsService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         logger.debug("AuthController initialized.");
@@ -51,11 +57,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
         try {
-            logger.debug("@PostMapping(\"/login\") - LoginRequest: {}", request.getLogin());
+            logger.debug("@PostMapping(\"/login\") - LoginRequest: {}", request);
 
             // Authenticate with user credentials
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPassword()));
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
             // Generate token
             String token = jwtService.generateToken(authentication);
@@ -63,7 +69,7 @@ public class AuthController {
             // Build and return the Token response
             TokenResponse response = new TokenResponse();
             response.setToken(token);
-            logger.debug("@PostMapping(\"/login\") - success for: {}", request.getLogin());
+            logger.debug("@PostMapping(\"/login\") - success for: {}", request.getEmail());
             return ResponseEntity.ok(response);
 
         } catch (AuthenticationException e) {
@@ -87,5 +93,26 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> getStatus() {
         logger.debug("@GetMapping(\"/status\")");
         return ResponseEntity.ok(Collections.singletonMap("apistatus", "ok"));
+    }
+
+    /**
+     * Mapping with Get method used to check the api connectivity
+     * 
+     * @return {@link ResponseEntity<Map<String, String>>}
+     * 
+     */
+    @GetMapping("/me")
+    public ResponseEntity<MeResponse> getUserInformations() {
+        logger.debug("@GetMapping(\"/me\")");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetail = (CustomUserDetails) authentication.getPrincipal();
+    
+        MeResponse meResponse = new MeResponse();
+        meResponse.setName(userDetail.getName());
+        meResponse.setEmail(userDetail.getEmail());
+        meResponse.setCreated_at(userDetail.getCreatedAt().toString());
+        meResponse.setUpdated_at(userDetail.getUpdatedAt().toString());
+        logger.debug("Return response: {}", meResponse.toString());
+        return ResponseEntity.ok(meResponse);
     }
 }

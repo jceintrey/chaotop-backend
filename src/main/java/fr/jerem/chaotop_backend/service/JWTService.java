@@ -8,7 +8,6 @@ import javax.crypto.spec.SecretKeySpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
@@ -19,7 +18,6 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
@@ -63,12 +61,13 @@ public class JWTService {
      */
     public String generateToken(Authentication authentication) throws Exception {
         logger.debug("Generating token for user: {}", authentication.getName());
+        logger.trace("", authentication);
 
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
-                .expiresAt(now.plus(1, ChronoUnit.MINUTES))
+                .expiresAt(now.plus(1, ChronoUnit.HOURS))
                 .subject(authentication.getName())
                 .claim("roles", "USER")
                 .build();
@@ -78,7 +77,7 @@ public class JWTService {
 
         try {
             String token = encode(jwtEncoderParameters);
-            logger.debug("Token successfully generated for {} : {}", authentication.getName(),token);
+            logger.debug("Token successfully generated for {} : {}", authentication.getName(), token);
             return token;
         } catch (Exception e) {
             logger.error("Error generating token for user: {}", authentication.getName(), e);

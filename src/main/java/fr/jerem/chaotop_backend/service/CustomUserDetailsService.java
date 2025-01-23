@@ -1,16 +1,12 @@
 package fr.jerem.chaotop_backend.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import fr.jerem.chaotop_backend.model.CustomUserDetails;
 import fr.jerem.chaotop_backend.model.DBUser;
 import fr.jerem.chaotop_backend.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -57,25 +53,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         /*
          * TODO implement RBAC later with a dedicated role table
          */
-        return new User(user.getEmail(), user.getPassword(), getGrantedAuthorities("USER"));
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
+        }
 
-    }
+        return new CustomUserDetails(user);
 
-    /**
-     * Loads a list of Spring Security {@link GrantedAuthority} objects from a
-     * a String role
-     * <p>
-     * This method will be refactored later with RBAC implementation
-     * </p>
-     * 
-     * @param String the role to add to the Authority
-     * @return a {@Link List} of {@link GrantedAuthority}
-     */
-    private List<GrantedAuthority> getGrantedAuthorities(String role) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
-        return authorities;
     }
 
 }
