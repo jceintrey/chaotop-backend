@@ -1,7 +1,6 @@
 package fr.jerem.chaotop_backend.security;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -18,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import fr.jerem.chaotop_backend.service.CustomUserDetailsService;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Configuration class for Spring Security settings.
@@ -39,6 +39,7 @@ import fr.jerem.chaotop_backend.service.CustomUserDetailsService;
  */
 @Configuration
 @EnableWebSecurity
+@Slf4j
 public class SpringSecurityConfig {
 
     private OncePerRequestFilter jwtAuthenticationFilter;
@@ -51,7 +52,6 @@ public class SpringSecurityConfig {
 
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(SpringSecurityConfig.class);
 
     /**
      * Configures the {@link SecurityFilterChain} bean, overiding default security
@@ -71,7 +71,7 @@ public class SpringSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        logger.debug("Processing filterChain :\n" + http.toString());
+        log.debug("Processing filterChain :\n" + http.toString());
 
         return http
                 .csrf(csrf -> csrf.disable())

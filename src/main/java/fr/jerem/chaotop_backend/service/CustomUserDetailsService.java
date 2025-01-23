@@ -10,6 +10,7 @@ import fr.jerem.chaotop_backend.model.CustomUserDetails;
 import fr.jerem.chaotop_backend.model.DBUser;
 import fr.jerem.chaotop_backend.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * UserDetailsService class used to load user from Database
@@ -23,6 +24,7 @@ import lombok.AllArgsConstructor;
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
 
     private UserRepository userRepository;
