@@ -2,8 +2,7 @@ package fr.jerem.chaotop_backend.security;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,11 +18,12 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private final JWTService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
 
@@ -39,15 +39,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @SuppressWarnings("null") HttpServletResponse response,
             @SuppressWarnings("null") FilterChain filterChain)
             throws ServletException, IOException {
-        logger.debug("Executing doFilterInternal");
+        log.debug("Executing doFilterInternal");
 
         // Get Authorization header
         String authorizationHeader = request.getHeader("Authorization");
-        logger.trace("authorizationHeader {}", authorizationHeader);
+        log.trace("authorizationHeader {}", authorizationHeader);
         // Verify if header contains a valid JWT
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
-            logger.trace("token {}", token);
+            log.trace("token {}", token);
             try {
 
                 Jwt jwt = this.jwtService.decode(token);
@@ -63,10 +63,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                logger.debug("Authentication of {} successfully added to SecurityContext.", userDetails.getUsername());
+                log.debug("Authentication of {} successfully added to SecurityContext.", userDetails.getUsername());
 
             } catch (JwtException ex) {
-                logger.error("Invalid JWT token");
+                log.error("Invalid JWT token");
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.getWriter().write("{\"error\": \"Invalid token\"}");
                 return;

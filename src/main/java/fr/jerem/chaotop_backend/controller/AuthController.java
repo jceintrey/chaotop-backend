@@ -3,8 +3,7 @@ package fr.jerem.chaotop_backend.controller;
 import java.util.Collections;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,21 +24,21 @@ import fr.jerem.chaotop_backend.dto.TokenResponse;
 import fr.jerem.chaotop_backend.model.CustomUserDetails;
 import fr.jerem.chaotop_backend.service.CustomUserDetailsService;
 import fr.jerem.chaotop_backend.service.JWTService;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j
 public class AuthController {
 
     private AuthenticationManager authenticationManager;
     private JWTService jwtService;
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-
     public AuthController(AuthenticationManager authenticationManager, JWTService jwtService,
             CustomUserDetailsService customUserDetailsService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
-        logger.debug("AuthController initialized.");
+        log.debug("AuthController initialized.");
 
     }
 
@@ -57,7 +56,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
         try {
-            logger.debug("@PostMapping(\"/login\") - LoginRequest: {}", request);
+            log.debug("@PostMapping(\"/login\") - LoginRequest: {}", request);
 
             // Authenticate with user credentials
             Authentication authentication = authenticationManager.authenticate(
@@ -69,15 +68,15 @@ public class AuthController {
             // Build and return the Token response
             TokenResponse response = new TokenResponse();
             response.setToken(token);
-            logger.debug("@PostMapping(\"/login\") - success for: {}", request.getEmail());
+            log.debug("@PostMapping(\"/login\") - success for: {}", request.getEmail());
             return ResponseEntity.ok(response);
 
         } catch (AuthenticationException e) {
-            logger.error("@PostMapping(\"/login\") error during user authentication \n" + e);
+            log.error("@PostMapping(\"/login\") error during user authentication \n" + e);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new TokenResponse());
         } catch (Exception e) {
-            logger.error("An exeption has occured " + e);
+            log.error("An exeption has occured " + e);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new TokenResponse());
         }
@@ -91,7 +90,7 @@ public class AuthController {
      */
     @GetMapping("/status")
     public ResponseEntity<Map<String, String>> getStatus() {
-        logger.debug("@GetMapping(\"/status\")");
+        log.debug("@GetMapping(\"/status\")");
         return ResponseEntity.ok(Collections.singletonMap("apistatus", "ok"));
     }
 
@@ -103,7 +102,7 @@ public class AuthController {
      */
     @GetMapping("/me")
     public ResponseEntity<MeResponse> getUserInformations() {
-        logger.debug("@GetMapping(\"/me\")");
+        log.debug("@GetMapping(\"/me\")");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetail = (CustomUserDetails) authentication.getPrincipal();
     
@@ -112,7 +111,7 @@ public class AuthController {
         meResponse.setEmail(userDetail.getEmail());
         meResponse.setCreated_at(userDetail.getCreatedAt().toString());
         meResponse.setUpdated_at(userDetail.getUpdatedAt().toString());
-        logger.debug("Return response: {}", meResponse.toString());
+        log.debug("Return response: {}", meResponse.toString());
         return ResponseEntity.ok(meResponse);
     }
 }

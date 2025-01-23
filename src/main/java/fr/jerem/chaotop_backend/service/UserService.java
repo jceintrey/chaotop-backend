@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import fr.jerem.chaotop_backend.model.DBUser;
 import fr.jerem.chaotop_backend.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * UserService class for managing users
@@ -19,6 +20,7 @@ import fr.jerem.chaotop_backend.repository.UserRepository;
  * 
  */
 @Service
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;

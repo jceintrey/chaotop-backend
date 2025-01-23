@@ -5,8 +5,7 @@ import java.time.temporal.ChronoUnit;
 
 import javax.crypto.spec.SecretKeySpec;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -22,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * JWTService class used to manage JWT operations
  * 
@@ -29,24 +30,24 @@ import com.nimbusds.jose.jwk.source.ImmutableSecret;
  * 
  */
 @Service
+@Slf4j
 public class JWTService {
 
     private final String jwtKey;
     private final JwtDecoder jwtDecoder;
     private final JwtEncoder jwtEncoder;
-    private static final Logger logger = LoggerFactory.getLogger(JWTService.class);
 
     public JWTService(@Value("${jwt.secret.key}") String jwtKey) {
         this.jwtKey = jwtKey;
 
         SecretKeySpec secretKey = new SecretKeySpec(getByteKey(), "HmacSHA256");
         this.jwtDecoder = NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS256).build();
-        logger.trace("jwtEncoder created: {}", this.jwtDecoder.toString());
+        log.trace("jwtEncoder created: {}", this.jwtDecoder.toString());
 
         this.jwtEncoder = new NimbusJwtEncoder(new ImmutableSecret<>(getByteKey()));
-        logger.trace("jwtEncoder created: {}", this.jwtEncoder.toString());
-        logger.trace("JWTService constructor called. Secret key length: {}", this.jwtEncoder.toString());
-        logger.debug("JWTService initialized with secret key.");
+        log.trace("jwtEncoder created: {}", this.jwtEncoder.toString());
+        log.trace("JWTService constructor called. Secret key length: {}", this.jwtEncoder.toString());
+        log.debug("JWTService initialized with secret key.");
     }
 
     /**
@@ -60,8 +61,8 @@ public class JWTService {
      * @throws Exception if there is an error during generation
      */
     public String generateToken(Authentication authentication) throws Exception {
-        logger.debug("Generating token for user: {}", authentication.getName());
-        logger.trace("", authentication);
+        log.debug("Generating token for user: {}", authentication.getName());
+        log.trace("", authentication);
 
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -77,34 +78,34 @@ public class JWTService {
 
         try {
             String token = encode(jwtEncoderParameters);
-            logger.debug("Token successfully generated for {} : {}", authentication.getName(), token);
+            log.debug("Token successfully generated for {} : {}", authentication.getName(), token);
             return token;
         } catch (Exception e) {
-            logger.error("Error generating token for user: {}", authentication.getName(), e);
+            log.error("Error generating token for user: {}", authentication.getName(), e);
             throw e;
         }
     }
 
     public Jwt decode(String token) {
-        logger.debug("Decoding token: {}", token);
+        log.debug("Decoding token: {}", token);
         try {
             Jwt jwt = this.getJwtDecoder().decode(token);
-            logger.debug("Token successfully decoded.");
+            log.debug("Token successfully decoded.");
             return jwt;
         } catch (Exception e) {
-            logger.error("Failed to decode token.", e);
+            log.error("Failed to decode token.", e);
             throw e;
         }
     }
 
     public String encode(JwtEncoderParameters jwtEncoderParameters) {
-        logger.debug("Encoding JWT with claims: {}", jwtEncoderParameters.getClaims());
+        log.debug("Encoding JWT with claims: {}", jwtEncoderParameters.getClaims());
         try {
             String token = this.getJwtEncoder().encode(jwtEncoderParameters).getTokenValue();
-            logger.debug("Token successfully encoded.");
+            log.debug("Token successfully encoded.");
             return token;
         } catch (Exception e) {
-            logger.error("Error encoding JWT.", e);
+            log.error("Error encoding JWT.", e);
             throw e;
         }
     }
