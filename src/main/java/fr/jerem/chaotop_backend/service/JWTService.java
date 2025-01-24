@@ -5,8 +5,6 @@ import java.time.temporal.ChronoUnit;
 
 import javax.crypto.spec.SecretKeySpec;
 
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
@@ -21,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
+import fr.jerem.chaotop_backend.configuration.properties.AppConfigProperties;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -33,17 +32,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JWTService {
 
-    private final String jwtKey;
     private final JwtDecoder jwtDecoder;
     private final JwtEncoder jwtEncoder;
+    private AppConfigProperties configProperties;
 
-    public JWTService(@Value("${jwt.secret.key}") String jwtKey) {
-        this.jwtKey = jwtKey;
+    public JWTService(AppConfigProperties configProperties) {
+        this.configProperties = configProperties;
 
+        //Création du Decoder
         SecretKeySpec secretKey = new SecretKeySpec(getByteKey(), "HmacSHA256");
         this.jwtDecoder = NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS256).build();
         log.trace("jwtEncoder created: {}", this.jwtDecoder.toString());
 
+        //Création de l'encoder
         this.jwtEncoder = new NimbusJwtEncoder(new ImmutableSecret<>(getByteKey()));
         log.trace("jwtEncoder created: {}", this.jwtEncoder.toString());
         log.trace("JWTService constructor called. Secret key length: {}", this.jwtEncoder.toString());
@@ -121,6 +122,6 @@ public class JWTService {
     }
 
     public byte[] getByteKey() {
-        return this.jwtKey.getBytes();
+        return this.configProperties.getJwtsecretkey().getBytes();
     }
 }
