@@ -1,0 +1,22 @@
+{"properties": [
+  {
+    "name": "chaotop.jwtsecretKey",
+    "type": "java.lang.String",
+    "description": "A description for 'chaotop.jwtsecretKey'"
+  },
+  {
+    "name": "chaotop.jwtexpirationtime",
+    "type": "java.lang.String",
+    "description": "A description for 'chaotop.jwtexpirationtime'"
+  },
+  {
+    "name": "chaotop.jwtsecretkey",
+    "type": "java.lang.String",
+    "description": "A description for 'chaotop.jwtsecretkey'"
+  },
+  {
+    "name": "chaotop.jwtalgorithm",
+    "type": "java.lang.String",
+    "description": "A description for 'chaotop.jwtalgorithm'"
+  }
+]}
