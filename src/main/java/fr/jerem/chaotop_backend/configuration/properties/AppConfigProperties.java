@@ -13,7 +13,7 @@ import org.springframework.validation.annotation.Validated;
 
 @Getter
 @Setter
-@Configuration
+//@Configuration
 @Validated
 @ConfigurationProperties(prefix = "chaotop")
 public class AppConfigProperties {

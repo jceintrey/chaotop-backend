@@ -111,12 +111,12 @@ public class JWTService {
         }
     }
 
-    private JwtDecoder getJwtDecoder() {
+    public JwtDecoder getJwtDecoder() {
         return this.jwtDecoder;
 
     }
 
-    private JwtEncoder getJwtEncoder() {
+    public JwtEncoder getJwtEncoder() {
         return this.jwtEncoder;
 
     }
