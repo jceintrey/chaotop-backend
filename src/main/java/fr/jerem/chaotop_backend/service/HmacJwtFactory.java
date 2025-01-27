@@ -26,14 +26,14 @@ import java.time.temporal.ChronoUnit;
 
 @Slf4j
 @Data
-public class SimpleJwtFactory implements JwtFactory {
+public class HmacJwtFactory implements JwtFactory {
 
-    private SecretKey secretKey;
+    private final SecretKey secretKey;
     private JwtDecoder jwtDecoder;
     private JwtEncoder jwtEncoder;
 
     // Constructor with secret key
-    public SimpleJwtFactory(String secret) {
+    public HmacJwtFactory(String secret) {
         if (secret == null || secret.length() < 32) { // Minimum 256 bits pour HMAC
             throw new IllegalArgumentException("Secret key must be at least 32 characters long");
         }

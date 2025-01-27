@@ -16,10 +16,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import fr.jerem.chaotop_backend.configuration.properties.AppConfigProperties;
 import fr.jerem.chaotop_backend.service.CustomUserDetailsService;
 import fr.jerem.chaotop_backend.service.JwtFactory;
-import fr.jerem.chaotop_backend.service.SimpleJwtFactory;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -53,13 +51,11 @@ public class SpringSecurityConfig {
     };
 
     private final JwtFactory jwtFactory;
-    private final AppConfigProperties configProperties;
 
     public SpringSecurityConfig(
-            CustomUserDetailsService customUserDetailsService, AppConfigProperties configProperties) {
+            CustomUserDetailsService customUserDetailsService, JwtFactory jwtFactory) {
         this.customUserDetailsService = customUserDetailsService;
-        this.configProperties = configProperties;
-        this.jwtFactory = new SimpleJwtFactory(this.configProperties.getJwtsecretkey());
+        this.jwtFactory = jwtFactory;
 
     }
 
