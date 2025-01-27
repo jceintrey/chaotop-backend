@@ -1,6 +1,9 @@
 package fr.jerem.chaotop_backend.configuration;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import org.passay.*;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,20 +22,39 @@ public class SampleConfig {
     @Bean
     public CommandLineRunner createSampleUser(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            // Vérifie si l'utilisateur sample existe déjà
-            if (userRepository.findByEmail("sample@example.com") == null) {
+            String sampleUserMail = "sample@example.com";
+            String sampleUserName = "Sample User";
+            // Check if user Already exist
+            if (userRepository.findByEmail(sampleUserMail) == null) {
+                String sampleUserclearPassword = generateSecurePassword();
+                String sampleUserhashedPassword = passwordEncoder.encode(sampleUserclearPassword);
+
                 DataBaseEntityUser sampleUser = new DataBaseEntityUser();
-                sampleUser.setEmail("sample@example.com"); // Email comme identifiant
-                sampleUser.setPassword(passwordEncoder.encode("samplepassword")); // Mot de passe haché avec BCrypt
-                sampleUser.setName("Sample User");
+                sampleUser.setEmail(sampleUserMail);
+                sampleUser.setPassword(sampleUserhashedPassword);
+                sampleUser.setName(sampleUserName);
                 sampleUser.setCreatedAt(LocalDateTime.now());
                 sampleUser.setUpdatedAt(LocalDateTime.now());
 
-                userRepository.save(sampleUser); // Sauvegarde dans la base
-                System.out.println("Sample user created: sample@example.com / samplepassword");
+                userRepository.save(sampleUser);
+                System.out.println("Sample user " + sampleUserMail + ", has been created with the password "
+                        + sampleUserclearPassword);
             } else {
-                System.out.println("Sample user already exists.");
+                System.out.println("Sample user" + sampleUserMail + " already exists.");
             }
         };
+    }
+
+    private String generateSecurePassword() {
+        PasswordGenerator generator = new PasswordGenerator();
+        CharacterRule lowerCaseRule = new CharacterRule(EnglishCharacterData.LowerCase, 2);
+        CharacterRule upperCaseRule = new CharacterRule(EnglishCharacterData.UpperCase, 2);
+        CharacterRule digitRule = new CharacterRule(EnglishCharacterData.Digit, 2);
+
+        // Longueur minimale du mot de passe
+        int passwordLength = 12;
+
+        return generator.generatePassword(passwordLength,
+                Arrays.asList(lowerCaseRule, upperCaseRule, digitRule));
     }
 }
