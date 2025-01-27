@@ -2,18 +2,16 @@ package fr.jerem.chaotop_backend.configuration.properties;
 
 import lombok.Getter;
 import lombok.Setter;
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 @Getter
 @Setter
-@Configuration
+// @Configuration
 @Validated
 @ConfigurationProperties(prefix = "chaotop")
 public class AppConfigProperties {
@@ -22,7 +20,5 @@ public class AppConfigProperties {
     @NotEmpty
     private String jwtsecretkey;
     private String jwtexpirationtime;
-
-
 
 }

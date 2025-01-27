@@ -1,22 +1,23 @@
-package fr.jerem.chaotop_backend.security;
-
+package fr.jerem.chaotop_backend.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.filter.OncePerRequestFilter;
 
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 import fr.jerem.chaotop_backend.service.CustomUserDetailsService;
+import fr.jerem.chaotop_backend.service.JwtFactory;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -42,16 +43,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SpringSecurityConfig {
 
-    private OncePerRequestFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService customUserDetailsService;
+    private static final String[] AUTH_WHITELIST = {
+            "/api/auth/login",
+            "/api/auth/register",
+            "/register"
+    };
 
-    public SpringSecurityConfig(@Lazy OncePerRequestFilter jwtAuthenticationFilter,
-    CustomUserDetailsService customUserDetailsService) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    private final JwtFactory jwtFactory;
+
+    public SpringSecurityConfig(
+            CustomUserDetailsService customUserDetailsService, JwtFactory jwtFactory) {
         this.customUserDetailsService = customUserDetailsService;
+        this.jwtFactory = jwtFactory;
 
     }
-
 
     /**
      * Configures the {@link SecurityFilterChain} bean, overiding default security
@@ -68,24 +74,16 @@ public class SpringSecurityConfig {
      * @return the configured {@link SecurityFilterChain} bean
      * @throws Exception if there is a configuration error
      */
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        log.debug("Processing filterChain :\n" + http.toString());
-
         return http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated())
-                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilter(jwtAuthenticationFilter)
-
-                // .addFilterBefore(jwtAuthenticationFilter,
-                // AnonymousAuthenticationFilter.class)
+                .oauth2ResourceServer((oauth2) -> oauth2.jwt(withDefaults()))
                 .build();
-
     }
 
     /**
@@ -126,6 +124,21 @@ public class SpringSecurityConfig {
                 .getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
+    }
+
+    @Bean
+    public JwtDecoder JwtDecoder() {
+        return this.jwtFactory.createJwtDecoder();
+    }
+
+    @Bean
+    public JwtEncoder JwtEncoder() {
+        return this.jwtFactory.createJwtEncoder();
+    }
+
+    @Bean
+    public JwtFactory JwtFactory() {
+        return this.jwtFactory;
     }
 
 }
