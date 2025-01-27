@@ -16,10 +16,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
+import fr.jerem.chaotop_backend.configuration.properties.AppConfigProperties;
 import fr.jerem.chaotop_backend.service.CustomUserDetailsService;
-import fr.jerem.chaotop_backend.service.JWTService;
+import fr.jerem.chaotop_backend.service.JwtFactory;
+import fr.jerem.chaotop_backend.service.SimpleJwtFactory;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -51,12 +51,15 @@ public class SpringSecurityConfig {
             "/api/auth/register",
             "/register"
     };
-    @Autowired
-    private JWTService jwtService;
+
+    private final JwtFactory jwtFactory;
+    private final AppConfigProperties configProperties;
 
     public SpringSecurityConfig(
-            CustomUserDetailsService customUserDetailsService) {
+            CustomUserDetailsService customUserDetailsService, AppConfigProperties configProperties) {
         this.customUserDetailsService = customUserDetailsService;
+        this.configProperties = configProperties;
+        this.jwtFactory = new SimpleJwtFactory(this.configProperties.getJwtsecretkey());
 
     }
 
@@ -129,12 +132,17 @@ public class SpringSecurityConfig {
 
     @Bean
     public JwtDecoder JwtDecoder() {
-        return jwtService.getJwtDecoder();
+        return this.jwtFactory.createJwtDecoder();
     }
 
     @Bean
     public JwtEncoder JwtEncoder() {
-        return jwtService.getJwtEncoder();
+        return this.jwtFactory.createJwtEncoder();
+    }
+
+    @Bean
+    public JwtFactory JwtFactory() {
+        return this.jwtFactory;
     }
 
 }

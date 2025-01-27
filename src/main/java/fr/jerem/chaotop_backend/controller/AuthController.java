@@ -3,7 +3,6 @@ package fr.jerem.chaotop_backend.controller;
 import java.util.Collections;
 import java.util.Map;
 
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,7 +22,7 @@ import fr.jerem.chaotop_backend.dto.MeResponse;
 import fr.jerem.chaotop_backend.dto.TokenResponse;
 import fr.jerem.chaotop_backend.model.CustomUserDetails;
 import fr.jerem.chaotop_backend.service.CustomUserDetailsService;
-import fr.jerem.chaotop_backend.service.JWTService;
+import fr.jerem.chaotop_backend.service.JwtFactory;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -31,13 +30,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthController {
 
-    private AuthenticationManager authenticationManager;
-    private JWTService jwtService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtFactory jwtFactory;
 
-    public AuthController(AuthenticationManager authenticationManager, JWTService jwtService,
+    public AuthController(AuthenticationManager authenticationManager, JwtFactory jwtFactory,
             CustomUserDetailsService customUserDetailsService) {
         this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
+        this.jwtFactory = jwtFactory;
         log.debug("AuthController initialized.");
 
     }
@@ -63,7 +62,7 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
             // Generate token
-            String token = jwtService.generateToken(authentication);
+            String token = jwtFactory.createToken(authentication);
 
             // Build and return the Token response
             TokenResponse response = new TokenResponse();
@@ -104,8 +103,10 @@ public class AuthController {
     public ResponseEntity<MeResponse> getUserInformations() {
         log.debug("@GetMapping(\"/me\")");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        log.trace("" + authentication.getPrincipal()  + " - ");
         CustomUserDetails userDetail = (CustomUserDetails) authentication.getPrincipal();
-    
+
         MeResponse meResponse = new MeResponse();
         meResponse.setName(userDetail.getName());
         meResponse.setEmail(userDetail.getEmail());
