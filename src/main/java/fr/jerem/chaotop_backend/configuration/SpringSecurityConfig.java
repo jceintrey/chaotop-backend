@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -16,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import fr.jerem.chaotop_backend.service.CustomUserDetailsService;
+import fr.jerem.chaotop_backend.service.DatabaseUserAuthenticationService;
 import fr.jerem.chaotop_backend.service.JwtFactory;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,18 +44,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SpringSecurityConfig {
 
-    private final CustomUserDetailsService customUserDetailsService;
+    private final UserDetailsService userDetailsService;
+
+    private final JwtFactory jwtFactory;
     private static final String[] AUTH_WHITELIST = {
             "/api/auth/login",
             "/api/auth/register",
             "/register"
     };
 
-    private final JwtFactory jwtFactory;
-
     public SpringSecurityConfig(
-            CustomUserDetailsService customUserDetailsService, JwtFactory jwtFactory) {
-        this.customUserDetailsService = customUserDetailsService;
+            UserDetailsService userDetailsService,
+            JwtFactory jwtFactory) {
+        this.userDetailsService = userDetailsService;
         this.jwtFactory = jwtFactory;
 
     }
@@ -106,7 +108,8 @@ public class SpringSecurityConfig {
      * responsible for
      * authenticating users.
      * <p>
-     * This method integrates with {@link CustomUserDetailsService} to load user
+     * This method integrates with {@link DatabaseUserAuthenticationService} to load
+     * user
      * details and the {@link PasswordEncoder}
      * to verify user credentials during authentication.
      * </p>
@@ -122,7 +125,7 @@ public class SpringSecurityConfig {
             throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http
                 .getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder);
+        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
     }
 

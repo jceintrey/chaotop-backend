@@ -7,11 +7,11 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class CustomUserDetails implements UserDetails {
+public class AppUserDetails implements UserDetails {
 
-    private final DBUser user;
+    private final DataBaseEntityUser user;
 
-    public CustomUserDetails(DBUser user) {
+    public AppUserDetails(DataBaseEntityUser user) {
         this.user = user;
     }
 
@@ -45,5 +45,13 @@ public class CustomUserDetails implements UserDetails {
 
     public LocalDateTime getUpdatedAt() {
         return user.getUpdatedAt();
+    }
+
+    @Override
+    public String toString() {
+        return "Email: " + getEmail() +
+                ", Name: " + getName() +
+                ", CreatedAt: " + getCreatedAt() +
+                ", UpdatedAt: " + getUpdatedAt();
     }
 }

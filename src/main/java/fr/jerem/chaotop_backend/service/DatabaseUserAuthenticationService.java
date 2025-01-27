@@ -1,13 +1,14 @@
 package fr.jerem.chaotop_backend.service;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import fr.jerem.chaotop_backend.model.CustomUserDetails;
-import fr.jerem.chaotop_backend.model.DBUser;
+import fr.jerem.chaotop_backend.model.AppUserDetails;
+import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
 import fr.jerem.chaotop_backend.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class CustomUserDetailsService implements UserDetailsService {
+@Primary
+public class DatabaseUserAuthenticationService implements UserDetailsService {
 
     private UserRepository userRepository;
 
@@ -51,7 +53,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        DBUser user = userRepository.findByEmail(email);
+        DataBaseEntityUser user = userRepository.findByEmail(email);
         /*
          * TODO implement RBAC later with a dedicated role table
          */
@@ -59,7 +61,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
 
-        return new CustomUserDetails(user);
+        return new AppUserDetails(user);
 
     }
 

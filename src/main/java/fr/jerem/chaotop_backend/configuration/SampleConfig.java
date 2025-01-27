@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import fr.jerem.chaotop_backend.model.DBUser;
+import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
 import fr.jerem.chaotop_backend.repository.UserRepository;
 
 /**
@@ -21,7 +21,7 @@ public class SampleConfig {
         return args -> {
             // Vérifie si l'utilisateur sample existe déjà
             if (userRepository.findByEmail("sample@example.com") == null) {
-                DBUser sampleUser = new DBUser();
+                DataBaseEntityUser sampleUser = new DataBaseEntityUser();
                 sampleUser.setEmail("sample@example.com"); // Email comme identifiant
                 sampleUser.setPassword(passwordEncoder.encode("samplepassword")); // Mot de passe haché avec BCrypt
                 sampleUser.setName("Sample User");

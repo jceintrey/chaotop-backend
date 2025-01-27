@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 /**
  * Represents a user entity in the database.
  * <p>
@@ -23,10 +22,12 @@ import lombok.Setter;
  * </p>
  * 
  * <p>
- * The {@code email} field is marked as unique to ensure no duplicate user emails
+ * The {@code email} field is marked as unique to ensure no duplicate user
+ * emails
  * exist in the system.
  * </p>
- * Lombock is used to generate Getters/Setters and the empty constructor needed by JPA.
+ * Lombock is used to generate Getters/Setters and the empty constructor needed
+ * by JPA.
  * 
  */
 @Entity
@@ -34,7 +35,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class DBUser {
+public class DataBaseEntityUser {
 
     @Id
     @Column(name = "id")
