@@ -46,7 +46,7 @@ public class Message {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private DBUser user;
+    private DataBaseEntityUser user;
 
     @Column(name = "message", length = 2000)
     private String message;

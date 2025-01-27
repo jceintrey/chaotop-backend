@@ -58,7 +58,7 @@ public class Rental {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false) // Définir la clé étrangère vers USERS
-    private DBUser owner;
+    private DataBaseEntityUser owner;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;

@@ -1,9 +1,12 @@
 package fr.jerem.chaotop_backend.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import fr.jerem.chaotop_backend.model.DBUser;
+import fr.jerem.chaotop_backend.model.AppUserDetails;
+import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
 import fr.jerem.chaotop_backend.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,22 +24,33 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class UserService {
+public class DefaultUserManagementService implements UserManagementService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public DefaultUserManagementService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void createUser(String email, String plainPassword, String name) {
-        DBUser user = new DBUser();
+    @Override
+    public AppUserDetails createUser(String email, String plainPassword, String name) {
+        DataBaseEntityUser user = new DataBaseEntityUser();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(plainPassword));
         user.setName(name);
-
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
+
+        return new AppUserDetails(user);
     }
+
+    @Override
+    public AppUserDetails getUserbyEmail(String email) {
+        DataBaseEntityUser user = this.userRepository.findByEmail(email);
+        return new AppUserDetails(user);
+    }
+
 }
