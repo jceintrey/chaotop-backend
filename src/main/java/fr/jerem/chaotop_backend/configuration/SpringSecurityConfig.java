@@ -139,9 +139,9 @@ public class SpringSecurityConfig {
         return this.jwtFactory.createJwtEncoder();
     }
 
-    @Bean
-    public JwtFactory JwtFactory() {
-        return this.jwtFactory;
-    }
+    // @Bean
+    // public JwtFactory JwtFactory() {
+    // return this.jwtFactory;
+    // }
 
 }

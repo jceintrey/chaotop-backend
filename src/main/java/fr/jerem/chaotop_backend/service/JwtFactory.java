@@ -11,5 +11,4 @@ public interface JwtFactory {
 
     String createToken(Authentication authentication) throws Exception;
 
-    // Jwt decode(String token);
 }

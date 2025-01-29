@@ -1,10 +1,14 @@
 package fr.jerem.chaotop_backend.configuration;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import fr.jerem.chaotop_backend.configuration.properties.AppConfigProperties;
+import fr.jerem.chaotop_backend.dto.RentalResponse;
+import fr.jerem.chaotop_backend.model.RentalEntity;
 import fr.jerem.chaotop_backend.repository.UserRepository;
 import fr.jerem.chaotop_backend.service.JwtFactory;
 import fr.jerem.chaotop_backend.service.UserManagementService;
@@ -22,5 +26,20 @@ public class AppConfig {
     @Bean
     public UserManagementService userManagementService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return new DefaultUserManagementService(userRepository, passwordEncoder);
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+
+        // Custom mapping for RentalResponse
+        modelMapper.addMappings(new PropertyMap<RentalEntity, RentalResponse>() {
+            @Override
+            protected void configure() {
+                map().setOwner(source.getOwner().getId());
+            }
+        });
+
+        return modelMapper;
     }
 }
