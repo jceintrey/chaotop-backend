@@ -1,6 +1,10 @@
 package fr.jerem.chaotop_backend.service;
 
+import java.util.Optional;
+
 import org.springframework.security.core.userdetails.UserDetails;
+
+import fr.jerem.chaotop_backend.dto.UserProfileResponse;
 
 /**
  * Interface for managing users
@@ -16,9 +20,14 @@ public interface UserManagementService {
      * @param name          the name of the new user.
      * @return a UserDetails object that represents the created user.
      */
-    public UserDetails createUser(String email, String plainPassword, String name);
+    public UserDetails createUser(String email, String plainPassword, String name) throws Exception;
 
-    public UserDetails getUserbyEmail(String email);
+    public Optional<UserDetails> getUserbyEmail(String email);
 
-    public Integer getUserId(String email);
+    public Optional<Integer> getUserId(String email);
+
+    public UserProfileResponse getUserInformationResponse(String email);
+
+    public boolean isEmailAlreadyUsed(String email);
+
 }

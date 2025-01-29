@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import fr.jerem.chaotop_backend.service.DatabaseUserAuthenticationService;
+import fr.jerem.chaotop_backend.service.DatabaseUserDetailsService;
 import fr.jerem.chaotop_backend.service.JwtFactory;
 import lombok.extern.slf4j.Slf4j;
 
@@ -108,7 +108,7 @@ public class SpringSecurityConfig {
      * responsible for
      * authenticating users.
      * <p>
-     * This method integrates with {@link DatabaseUserAuthenticationService} to load
+     * This method integrates with {@link DatabaseUserDetailsService} to load
      * user
      * details and the {@link PasswordEncoder}
      * to verify user credentials during authentication.
