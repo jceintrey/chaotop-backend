@@ -1,10 +1,14 @@
 package fr.jerem.chaotop_backend.service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import fr.jerem.chaotop_backend.dto.UserProfileResponse;
 import fr.jerem.chaotop_backend.model.AppUserDetails;
 import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
 import fr.jerem.chaotop_backend.repository.UserRepository;
@@ -36,6 +40,7 @@ public class DefaultUserManagementService implements UserManagementService {
 
     @Override
     public AppUserDetails createUser(String email, String plainPassword, String name) {
+
         DataBaseEntityUser user = new DataBaseEntityUser();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(plainPassword));
@@ -48,14 +53,50 @@ public class DefaultUserManagementService implements UserManagementService {
     }
 
     @Override
-    public AppUserDetails getUserbyEmail(String email) {
-        DataBaseEntityUser user = this.userRepository.findByEmail(email);
-        return new AppUserDetails(user);
+    public Optional<UserDetails> getUserbyEmail(String email) {
+        return Optional.ofNullable(new AppUserDetails(this.userRepository.findByEmail(email)));
     }
-    @Override
-    public Integer getUserId(String email) {
-        return this.userRepository.findByEmail(email).getId();
 
+    @Override
+    public Optional<Integer> getUserId(String email) {
+        return Optional.ofNullable(this.userRepository.findByEmail(email))
+                .map(user -> user.getId());
+    }
+
+    /**
+     * Get the user Informations and build a {@link UserProfileResponse}
+     * 
+     * @param String email of the user.
+     * 
+     * @return {@link UserProfileResponse} the DTO response containing the user
+     *         informations.
+     * 
+     */
+    @Override
+    public UserProfileResponse getUserInformationResponse(String email) {
+        Optional<UserDetails> userDetailsOptional = getUserbyEmail(email);
+
+        // if user is present
+        return userDetailsOptional.map(userDetails -> {
+            // Cast to AppUserDetails to get detail user fields
+            AppUserDetails appUserDetails = (AppUserDetails) userDetails;
+            return new UserProfileResponse(
+                    appUserDetails.getName(),
+                    appUserDetails.getEmail(),
+                    appUserDetails.getCreatedAt().toString(),
+                    appUserDetails.getUpdatedAt().toString());
+        }).orElseGet(() -> {
+            // return empty UserProfileResponse if user not found
+            return new UserProfileResponse("", "", "", "");
+        });
+    }
+
+    @Override
+    public boolean isEmailAlreadyUsed(String email) {
+
+        Optional<Integer> optionalUserId = getUserId(email);
+
+        return optionalUserId.isPresent();
     }
 
 }
