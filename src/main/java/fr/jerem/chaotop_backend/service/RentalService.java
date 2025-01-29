@@ -56,6 +56,19 @@ public class RentalService {
                 .map(rentalEntity -> modelMapper.map(rentalEntity, RentalResponse.class));
     }
 
+    /**
+     * Create a new Rental given the arguments and save it to the repository
+     * 
+     * @param name        the name of the new rental.
+     * @param surface     the surface of the new rental.
+     * @param price       the price of the new rental.
+     * @param picture     the optional picture srting url reference of the new
+     *                    rental.
+     * @param description the description of the new rental.
+     * @param owner       the DataBaseEntityUser owner of the rental.
+     * 
+     * @return the ID of the new Rental
+     */
     public Integer createRental(String name, double surface, BigDecimal price, String picture,
             String description, DataBaseEntityUser owner) {
 
@@ -77,4 +90,45 @@ public class RentalService {
     public DataBaseEntityUser getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
+    /**
+     * Updates a rental entity if exist with args values.
+     * 
+     * 
+     * @param id          the ID of the rental to update.
+     * @param name        the new name of the rental if not null.
+     * @param price       the new price of the rental if not null.
+     * @param surface     the new surface of the rental if > 0.
+     * @param description the new description if not null.
+     * @return a {@link Optional} containing the {@link RentalResponse} wrapped from
+     *         the new {@link RentalEntity} or null if not present.
+     */
+    public Optional<RentalResponse> updateRental(Long id, String name, BigDecimal price, double surface,
+            String description) {
+        Optional<RentalEntity> optionalRentalEntity = rentalRepository.findById(id);
+
+        if (optionalRentalEntity.isPresent()) {
+            RentalEntity rentalEntity = optionalRentalEntity.get();
+
+            if (name != null)
+                rentalEntity.setName(name);
+            if (price != null)
+                rentalEntity.setPrice(price);
+            if (surface > 0)
+                rentalEntity.setSurface(surface);
+
+            if (description != null)
+                rentalEntity.setDescription(description);
+
+            rentalEntity.setUpdatedAt(LocalDateTime.now());
+
+            RentalEntity updatedRental = rentalRepository.save(rentalEntity);
+
+            return Optional.of(modelMapper.map(updatedRental, RentalResponse.class));
+        }
+
+        return Optional.empty();
+
+    }
+
 }

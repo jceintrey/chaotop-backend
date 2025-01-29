@@ -3,26 +3,21 @@ package fr.jerem.chaotop_backend.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import fr.jerem.chaotop_backend.dto.RentalCreateResponse;
 import fr.jerem.chaotop_backend.dto.RentalListResponse;
 import fr.jerem.chaotop_backend.dto.RentalResponse;
 import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
-import fr.jerem.chaotop_backend.model.RentalEntity;
 import fr.jerem.chaotop_backend.service.RentalService;
 import fr.jerem.chaotop_backend.service.UserManagementService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
 
-import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -31,7 +26,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
@@ -39,21 +33,19 @@ import org.springframework.web.bind.annotation.PutMapping;
 @Slf4j
 public class RentalContoller {
     private final RentalService rentalService;
-    private final ModelMapper modelMapper;
 
     public RentalContoller(
             RentalService rentalService,
-            UserManagementService userManagementService,
-            ModelMapper modelMapper) {
+            UserManagementService userManagementService) {
         this.rentalService = rentalService;
-        this.modelMapper = modelMapper;
         log.debug("RentalContoller initialized.");
     }
 
     /**
-     * Mapping with Get method used to get the whole rental list
+     * Retrieves all rentals.
      * 
-     * @return {@link }
+     * @return {@link ResponseEntity} containing the {@link RentalListResponse}
+     *         representing a list of {@link RentalResponse}
      * 
      */
     @GetMapping("")
@@ -65,6 +57,13 @@ public class RentalContoller {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Retrieves a rental by its ID.
+     * 
+     * @param id The ID of the rental to retrieve.
+     * @return {@link ResponseEntity} containing the {@link RentalResponse} if
+     *         found, otherwise a 404 response.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<RentalResponse> getRentalById(@PathVariable("id") final Long id) {
         log.debug("@GetMapping(\"/{id}\")");
@@ -76,6 +75,17 @@ public class RentalContoller {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * Creates a new rental.
+     * 
+     * @param name        The name of the rental.
+     * @param surface     The surface area of the rental.
+     * @param price       The price of the rental.
+     * @param picture     Optional picture of the rental.
+     * @param description Optional description of the rental.
+     * @return {@link ResponseEntity} containing the creation status and rental ID
+     *         if successful.
+     */
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RentalCreateResponse> createRental(
             @RequestParam("name") String name,
@@ -106,11 +116,29 @@ public class RentalContoller {
         }
     }
 
-    @PutMapping("path/{id}")
-    public String putMethodName(@PathVariable String id, @RequestBody String entity) {
-        // TODO: process PUT request
+    /**
+     * Updates an existing rental.
+     * 
+     * @param id          The ID of the rental to update.
+     * @param name        The updated name of the rental.
+     * @param surface     The updated surface area of the rental.
+     * @param price       The updated price of the rental.
+     * @param description The updated description of the rental.
+     * @return ResponseEntity containing the updated RentalResponse if found,
+     *         otherwise a 404 response.
+     */
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<RentalResponse> updateRental(
+            @PathVariable("id") final Long id,
+            @RequestParam("name") String name,
+            @RequestParam("surface") double surface,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam(value = "description", required = false) String description) {
+        log.debug("@PutMapping(\"/{id}\")");
 
-        return entity;
+        return rentalService.updateRental(id, name, price, surface, description)
+                .map((r) -> ResponseEntity.ok(r))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 }
