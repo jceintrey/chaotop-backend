@@ -14,7 +14,6 @@ import fr.jerem.chaotop_backend.dto.RentalResponse;
 import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
 import fr.jerem.chaotop_backend.model.RentalEntity;
 import fr.jerem.chaotop_backend.repository.RentalRepository;
-import fr.jerem.chaotop_backend.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -22,16 +21,16 @@ import lombok.extern.slf4j.Slf4j;
 public class RentalService {
 
     private RentalRepository rentalRepository;
-    private UserRepository userRepository;
+    private UserManagementService userManagementService;
     private final ModelMapper modelMapper;
 
     public RentalService(
             RentalRepository rentalRepository,
-            UserRepository userRepository,
+            UserManagementService userManagementService,
             ModelMapper modelMapper) {
 
         this.rentalRepository = rentalRepository;
-        this.userRepository = userRepository;
+        this.userManagementService = userManagementService;
         this.modelMapper = modelMapper;
     }
 
@@ -70,26 +69,32 @@ public class RentalService {
      * @return the ID of the new Rental
      */
     public Integer createRental(String name, double surface, BigDecimal price, String picture,
-            String description, DataBaseEntityUser owner) {
+            String description, Integer userId) {
+        if (userId == null)
+            throw new IllegalArgumentException("Invalid userId");
 
-        if (owner == null || owner.getId() == null) {
-            throw new IllegalArgumentException("Invalid owner");
-        }
+        DataBaseEntityUser datatBaseEntityUser = userManagementService.getUserById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
         RentalEntity rentalEntity = new RentalEntity();
         rentalEntity.setName(name);
+        rentalEntity.setSurface(surface);
         rentalEntity.setPrice(price);
         rentalEntity.setPicture(picture);
-        rentalEntity.setOwner(owner);
         rentalEntity.setDescription(description);
+        rentalEntity.setOwner(datatBaseEntityUser);
         rentalEntity.setCreatedAt(LocalDateTime.now());
         rentalEntity.setUpdatedAt(LocalDateTime.now());
-        RentalEntity savedRental = rentalRepository.save(rentalEntity);
-        return savedRental.getId();
+
+        rentalRepository.save(rentalEntity);
+
+        return 0;
+
     }
 
-    public DataBaseEntityUser getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
+    // public DataBaseEntityUser getUserByEmail(String email) {
+    // return userRepository.findByEmail(email);
+    // }
 
     /**
      * Updates a rental entity if exist with args values.

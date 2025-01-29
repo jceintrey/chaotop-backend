@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -97,6 +96,11 @@ public class DefaultUserManagementService implements UserManagementService {
         Optional<Integer> optionalUserId = getUserId(email);
 
         return optionalUserId.isPresent();
+    }
+
+    @Override
+    public Optional<DataBaseEntityUser> getUserById(Integer userId) {
+        return userRepository.findById(userId);
     }
 
 }
