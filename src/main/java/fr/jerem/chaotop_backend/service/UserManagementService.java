@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import fr.jerem.chaotop_backend.dto.UserProfileResponse;
+import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
 
 /**
  * Interface for managing users
@@ -29,5 +30,8 @@ public interface UserManagementService {
     public UserProfileResponse getUserInformationResponse(String email);
 
     public boolean isEmailAlreadyUsed(String email);
+
+    public Optional<DataBaseEntityUser> getUserById(Integer userId);
+
 
 }

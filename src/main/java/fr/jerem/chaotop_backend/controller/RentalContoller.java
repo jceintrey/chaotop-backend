@@ -7,7 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 import fr.jerem.chaotop_backend.dto.RentalCreateResponse;
 import fr.jerem.chaotop_backend.dto.RentalListResponse;
 import fr.jerem.chaotop_backend.dto.RentalResponse;
-import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
+
+import fr.jerem.chaotop_backend.service.AuthenticationService;
 import fr.jerem.chaotop_backend.service.RentalService;
 import fr.jerem.chaotop_backend.service.UserManagementService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +19,10 @@ import java.util.List;
 
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,11 +34,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 @Slf4j
 public class RentalContoller {
     private final RentalService rentalService;
+    private final AuthenticationService authenticationService;
+    private final UserManagementService userManagementService;
 
     public RentalContoller(
             RentalService rentalService,
-            UserManagementService userManagementService) {
+            UserManagementService userManagementService,
+            AuthenticationService authenticationService) {
         this.rentalService = rentalService;
+        this.userManagementService = userManagementService;
+        this.authenticationService = authenticationService;
+
         log.debug("RentalContoller initialized.");
     }
 
@@ -95,18 +102,26 @@ public class RentalContoller {
             @RequestParam(value = "description", required = false) String description) {
 
         log.debug("@PostMapping(\"\")");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userEmail = authentication.getName();
 
-        DataBaseEntityUser user = rentalService.getUserByEmail(userEmail);
+        Optional<String> optionalAuthenticatedUserEmail = authenticationService.getAuthenticatedUserEmail();
 
-        if (user == null) {
-            return ResponseEntity.badRequest().body(new RentalCreateResponse("User not found"));
+        if (optionalAuthenticatedUserEmail.isEmpty()) {
+            log.error("No authenticated user found.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
+        String email = optionalAuthenticatedUserEmail.get();
+        Optional<Integer> optionalUserId = userManagementService.getUserId(email);
+        if (optionalUserId.isEmpty()) {
+            log.error("No Id found for email {}", email);
+            return ResponseEntity.internalServerError().build();
+        }
+
+        Integer userId = optionalUserId.get();
         try {
             // TODO a specific service to store image
 
-            Integer rentalId = rentalService.createRental(name, surface, price, null, description, user);
+            Integer rentalId = rentalService.createRental(name, surface, price, null, description, userId);
 
             URI location = URI.create("/api/rentals/" + rentalId);
             return ResponseEntity.created(location).body(new RentalCreateResponse("Rental created!"));
