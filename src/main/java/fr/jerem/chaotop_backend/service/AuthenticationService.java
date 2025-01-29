@@ -1,10 +1,13 @@
 package fr.jerem.chaotop_backend.service;
 
+import java.util.Optional;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import fr.jerem.chaotop_backend.dto.LoginRequest;
@@ -45,5 +48,15 @@ public class AuthenticationService {
         } catch (AuthenticationException e) {
             throw new AuthenticationServiceException("Authentication failed", e);
         }
+    }
+
+     public Optional<String> getAuthenticatedUserEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated() ) {
+            return Optional.ofNullable(authentication.getName());
+        }
+
+        return Optional.empty();
     }
 }

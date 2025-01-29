@@ -1,5 +1,7 @@
 package fr.jerem.chaotop_backend.controller;
 
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -70,10 +72,17 @@ public class AuthController {
     public ResponseEntity<UserProfileResponse> getUserInformations() {
         log.debug("@GetMapping(\"/me\")");
 
-        // Get authentication context
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
 
+        Optional<String> optionalAuthenticatedUserEmail = authenticationService.getAuthenticatedUserEmail();
+
+        
+        if (optionalAuthenticatedUserEmail.isEmpty()) {
+            log.error("No authenticated user found.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new UserProfileResponse("", "", "", ""));
+        }
+    
+        String email = optionalAuthenticatedUserEmail.get();
         try {
             UserProfileResponse meResponse = userManagementService.getUserInformationResponse(email);
 
