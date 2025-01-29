@@ -1,6 +1,7 @@
 package fr.jerem.chaotop_backend.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
 
@@ -13,6 +14,7 @@ import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
  * 
  * 
  */
+@Repository
 public interface UserRepository extends JpaRepository<DataBaseEntityUser, Integer> {
     /**
      * Retrieves a user by the email address.

@@ -15,14 +15,15 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-
 /**
  * Represents a rental entity in the database.
  * <p>
  * This class is mapped to the {@code rentals} table in the database, and
  * contains
- * the rental's information including the price, the surface, the creation and update
- * dates, the name and a picture, and also the user who is the owner as foreign keys in the database.
+ * the rental's information including the price, the surface, the creation and
+ * update
+ * dates, the name and a picture, and also the user who is the owner as foreign
+ * keys in the database.
  * </p>
  * 
  * Lombock is used to generate Getters/Setters and the empty constructor needed
@@ -34,7 +35,27 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Rental {
+public class RentalEntity {
+
+    public RentalEntity(
+            String name,
+            double surface,
+            BigDecimal price,
+            String picture,
+            String description,
+            DataBaseEntityUser owner,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
+
+        this.name = name;
+        this.surface = surface;
+        this.price = price;
+        this.picture = picture;
+        this.description = description;
+        this.owner = owner;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

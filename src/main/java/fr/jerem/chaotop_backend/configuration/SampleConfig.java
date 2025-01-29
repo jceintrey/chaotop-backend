@@ -1,5 +1,6 @@
 package fr.jerem.chaotop_backend.configuration;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,9 +11,12 @@ import org.passay.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
+import fr.jerem.chaotop_backend.model.RentalEntity;
+import fr.jerem.chaotop_backend.repository.RentalRepository;
 import fr.jerem.chaotop_backend.repository.UserRepository;
 
 /**
@@ -29,6 +33,7 @@ public class SampleConfig {
      * @return
      */
     @Bean
+    @Order(1)
     public CommandLineRunner createSampleUser(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 
         HashMap<String, String> userMap = new HashMap<>();
@@ -80,5 +85,26 @@ public class SampleConfig {
 
         return generator.generatePassword(passwordLength,
                 Arrays.asList(lowerCaseRule, upperCaseRule, digitRule));
+    }
+
+    @Bean
+    @Order(2)
+    public CommandLineRunner createSampleRentals(RentalRepository rentalRepository, UserRepository userRepository) {
+        return args -> {
+            RentalEntity rental = new RentalEntity();
+
+            rental.setName("rental1");
+            rental.setSurface(432);
+            rental.setPrice(new BigDecimal(300));
+            rental.setPicture("https://blog.technavio.org/wp-content/uploads/2018/12/Online-House-Rental-Sites.jpg");
+            rental.setDescription(
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a lectus eleifend, varius massa ac, mollis tortor. Quisque ipsum nulla, faucibus ac metus a, eleifend efficitur augue. Integer vel pulvinar ipsum. Praesent mollis neque sed sagittis ultricies. Suspendisse congue ligula at justo molestie, eget cursus nulla tincidunt. Pellentesque elementum rhoncus arcu, viverra gravida turpis mattis in. Maecenas tempor elementum lorem vel ultricies. Nam tempus laoreet eros, et viverra libero tincidunt a. Nunc vel nisi vulputate, sodales massa eu, varius erat.");
+            rental.setOwner(userRepository.findByEmail("bob@mail.tld"));
+            rental.setCreatedAt(LocalDateTime.now());
+            rental.setUpdatedAt(LocalDateTime.now());
+
+            rentalRepository.save(rental);
+        };
+
     }
 }

@@ -95,6 +95,7 @@ public class AuthController {
         log.debug("@GetMapping(\"/me\")");
         // Get authentication context
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        
 
         try {
             // Get a UserDetails from userManagementService

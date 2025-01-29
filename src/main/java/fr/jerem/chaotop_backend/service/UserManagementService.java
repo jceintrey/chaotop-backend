@@ -19,4 +19,6 @@ public interface UserManagementService {
     public UserDetails createUser(String email, String plainPassword, String name);
 
     public UserDetails getUserbyEmail(String email);
+
+    public Integer getUserId(String email);
 }

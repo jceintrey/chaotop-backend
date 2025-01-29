@@ -52,5 +52,10 @@ public class DefaultUserManagementService implements UserManagementService {
         DataBaseEntityUser user = this.userRepository.findByEmail(email);
         return new AppUserDetails(user);
     }
+    @Override
+    public Integer getUserId(String email) {
+        return this.userRepository.findByEmail(email).getId();
+
+    }
 
 }
