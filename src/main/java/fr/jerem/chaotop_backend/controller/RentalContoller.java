@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import fr.jerem.chaotop_backend.dto.RentalCreateResponse;
+import fr.jerem.chaotop_backend.dto.RentalListResponse;
 import fr.jerem.chaotop_backend.dto.RentalResponse;
 import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
 import fr.jerem.chaotop_backend.model.RentalEntity;
@@ -18,6 +19,9 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Optional;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,12 +39,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 @Slf4j
 public class RentalContoller {
     private final RentalService rentalService;
+    private final ModelMapper modelMapper;
 
     public RentalContoller(
             RentalService rentalService,
-            UserManagementService userManagementService) {
+            UserManagementService userManagementService,
+            ModelMapper modelMapper) {
         this.rentalService = rentalService;
-
+        this.modelMapper = modelMapper;
         log.debug("RentalContoller initialized.");
     }
 
@@ -51,54 +57,23 @@ public class RentalContoller {
      * 
      */
     @GetMapping("")
-    public ResponseEntity<List<RentalResponse>> getAllRentals() {
-        log.debug(" @GetMapping(\"/\")");
-        List<RentalEntity> rentals = this.rentalService.getAllRentals();
-        log.debug("Retrieved {} rentals", rentals.size());
-        List<RentalResponse> rentalResponses = new ArrayList<>();
-        for (RentalEntity rental : rentals) {
-            rentalResponses.add(mapToRentalResponse(rental));
-        }
-
-        log.debug(rentalResponses.toString());
-        return ResponseEntity.ok(rentalResponses);
-    }
-
-    private RentalResponse mapToRentalResponse(RentalEntity rental) {
-        RentalResponse rentalResponse = new RentalResponse();
-        rentalResponse.setId(rental.getId());
-        rentalResponse.setName(rental.getName());
-        rentalResponse.setSurface(rental.getSurface());
-        rentalResponse.setPrice(rental.getPrice());
-        rentalResponse.setPicture(rental.getPicture());
-        rentalResponse.setDescription(rental.getDescription());
-        rentalResponse.setOwner(rental.getOwner().getId());
-        rentalResponse.setCreatedAt(rental.getCreatedAt());
-        rentalResponse.setUpdatedAt(rental.getUpdatedAt());
-        return rentalResponse;
+    public ResponseEntity<RentalListResponse> getAllRentals() {
+        log.debug("@GetMapping(\"\")");
+        List<RentalResponse> rentalResponses = rentalService.getAllRentals();
+        RentalListResponse response = new RentalListResponse(rentalResponses);
+        log.debug("Retrieved {} rentals", rentalResponses.size());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RentalResponse> getRentalById(@PathVariable("id") final Long id) {
         log.debug("@GetMapping(\"/{id}\")");
 
-        RentalResponse rentalResponse = rentalService.getRentalById(id)
-                .map(rental -> {
-                    RentalResponse response = new RentalResponse();
-                    response.setId(rental.getId());
-                    response.setName(rental.getName());
-                    response.setSurface(rental.getSurface());
-                    response.setPrice(rental.getPrice());
-                    response.setPicture(rental.getPicture());
-                    response.setDescription(rental.getDescription());
-                    response.setOwner(rental.getOwner().getId());
-                    response.setCreatedAt(rental.getCreatedAt());
-                    response.setUpdatedAt(rental.getUpdatedAt());
-                    return response;
-                })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Rental not found"));
+        Optional<RentalResponse> rentalResponse = rentalService.getRentalById(id);
 
-        return ResponseEntity.ok(rentalResponse);
+        return rentalResponse
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -2,15 +2,15 @@ package fr.jerem.chaotop_backend.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.id.IdentifierGenerationException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.modelmapper.ModelMapper;
+
 import org.springframework.stereotype.Service;
 
-import fr.jerem.chaotop_backend.model.AppUserDetails;
+import fr.jerem.chaotop_backend.dto.RentalResponse;
 import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
 import fr.jerem.chaotop_backend.model.RentalEntity;
 import fr.jerem.chaotop_backend.repository.RentalRepository;
@@ -23,27 +23,37 @@ public class RentalService {
 
     private RentalRepository rentalRepository;
     private UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
     public RentalService(
             RentalRepository rentalRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            ModelMapper modelMapper) {
 
         this.rentalRepository = rentalRepository;
         this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
+    }
+
+    public List<RentalResponse> getAllRentals() {
+
+        List<RentalEntity> rentals = rentalRepository.findAll();
+        List<RentalResponse> rentalResponses = new ArrayList<>();
+
+        for (RentalEntity rentalEntity : rentals) {
+            rentalResponses.add(modelMapper.map(rentalEntity, RentalResponse.class));
+        }
+        return rentalResponses;
 
     }
 
-    public List<RentalEntity> getAllRentals() {
-        return this.rentalRepository.findAll();
-
-    }
-
-    public Optional<RentalEntity> getRentalById(Long id) {
+    public Optional<RentalResponse> getRentalById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        return rentalRepository.findById(id);
 
+        return rentalRepository.findById(id)
+                .map(rentalEntity -> modelMapper.map(rentalEntity, RentalResponse.class));
     }
 
     public Integer createRental(String name, double surface, BigDecimal price, String picture,
