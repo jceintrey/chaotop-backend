@@ -21,11 +21,9 @@ import lombok.Setter;
  * Represents a message entity in the database.
  * <p>
  * This class is mapped to the {@code messages} table in the database, and
- * contains
- * the message's information including the message, the creation and update
- * dates, and the user and rental defined as foreign keys in the database.
+ * contains the message's information including the message, the creation 
+ * and update dates, and the user and rental defined as foreign keys in the database.
  * </p>
- * 
  * Lombock is used to generate Getters/Setters and the empty constructor needed
  * by JPA.
  * 

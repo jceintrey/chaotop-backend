@@ -1,5 +1,6 @@
 package fr.jerem.chaotop_backend.service;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
@@ -13,6 +14,10 @@ import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
+import fr.jerem.chaotop_backend.configuration.AppConfig;
+import fr.jerem.chaotop_backend.dto.RentalResponse;
+import fr.jerem.chaotop_backend.model.RentalEntity;
+import fr.jerem.chaotop_backend.repository.RentalRepository;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +29,18 @@ import javax.crypto.spec.SecretKeySpec;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+/**
+ * Implementation of {@link JwtFacory} responsible for handling JSON Web Token
+ * creation
+ * and decoding.
+ * 
+ * <p>
+ * This class acts as a factory for JWT encoders and decoders, ensuring a
+ * singleton-like behavior
+ * for each instance's encoder and decoder properties.
+ * This implementation uses a HMAC SHA256 algorithm for signing Jwt tokens.
+ * 
+ */
 @Slf4j
 @Data
 public class HmacJwtFactory implements JwtFactory {
@@ -32,14 +49,28 @@ public class HmacJwtFactory implements JwtFactory {
     private JwtDecoder jwtDecoder;
     private JwtEncoder jwtEncoder;
 
-    // Constructor with secret key
+    /**
+     * Constructs an instance of {@code HmacJwtFactory} with a provided secret key.
+     *
+     * @param secret The secret key used for HMAC SHA-256 signing. Must be at least
+     *               32 characters long.
+     * @throws IllegalArgumentException if the secret key is null or too short.
+     */
     public HmacJwtFactory(String secret) {
-        if (secret == null || secret.length() < 32) { // Minimum 256 bits pour HMAC
+        if (secret == null || secret.length() < 32) {
             throw new IllegalArgumentException("Secret key must be at least 32 characters long");
         }
         this.secretKey = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
     }
 
+    /**
+     * Creates if not exists and returns a {@link JwtDecoder} for verifying JWT
+     * tokens.
+     * 
+     * 
+     * @return a {@link JwtDecoder} instance.
+     * @throws IllegalStateException if decoder creation fails.
+     */
     @Override
     public JwtDecoder createJwtDecoder() {
         if (this.jwtDecoder == null) {
@@ -59,6 +90,14 @@ public class HmacJwtFactory implements JwtFactory {
 
     }
 
+    /**
+     * Creates if not exists and returns a {@link JwtEncoder} for signing JWT
+     * tokens.
+     * 
+     * 
+     * @return a {@link JwtEncoder} instance.
+     * @throws IllegalStateException if decoder creation fails.
+     */
     @Override
     public JwtEncoder createJwtEncoder() {
         if (this.jwtEncoder == null) {
@@ -114,19 +153,6 @@ public class HmacJwtFactory implements JwtFactory {
                 .claim("roles", "USER")
                 .build();
         return claims;
-    }
-
-    @SuppressWarnings("unused")
-    private Jwt decode(String token) {
-        log.debug("Decoding token: {}", token);
-        try {
-            Jwt jwt = getJwtDecoder().decode(token);
-            log.debug("Token successfully decoded.");
-            return jwt;
-        } catch (Exception e) {
-            log.error("Failed to decode token.", e);
-            throw e;
-        }
     }
 
     /**

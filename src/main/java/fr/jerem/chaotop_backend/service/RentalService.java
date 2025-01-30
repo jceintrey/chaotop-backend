@@ -7,7 +7,16 @@ import java.util.Optional;
 import fr.jerem.chaotop_backend.dto.RentalResponse;
 import fr.jerem.chaotop_backend.model.RentalEntity;
 
-
+/**
+ * Service interface for managing rentals like retrieving all rentals, or a
+ * specific one, creating or updating.
+ * <p>
+ * This service defines the contract for managing rentals.
+ * 
+ * </p>
+ * 
+ * @see DefaultMessageService for the default implementation.
+ */
 public interface RentalService {
 
     /**

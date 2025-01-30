@@ -19,11 +19,9 @@ import java.time.LocalDateTime;
  * Represents a rental entity in the database.
  * <p>
  * This class is mapped to the {@code rentals} table in the database, and
- * contains
- * the rental's information including the price, the surface, the creation and
- * update
- * dates, the name and a picture, and also the user who is the owner as foreign
- * keys in the database.
+ * contains the rental's information including the price, the surface,
+ * the creation and update dates, the name and a picture, and also the user 
+ * who is the owner as foreign keys in the database.
  * </p>
  * 
  * Lombock is used to generate Getters/Setters and the empty constructor needed

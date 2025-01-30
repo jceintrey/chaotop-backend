@@ -10,12 +10,27 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import fr.jerem.chaotop_backend.configuration.AppConfig;
 import fr.jerem.chaotop_backend.dto.RentalResponse;
 import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
 import fr.jerem.chaotop_backend.model.RentalEntity;
 import fr.jerem.chaotop_backend.repository.RentalRepository;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Implementation of {@link RentalService} responsible for managing rental
+ * entities.
+ * <p>
+ * This service handles operations like retrieving, creating, and updating
+ * rental details.
+ * It communicates with the {@link RentalRepository} for persistence and
+ * {@link UserManagementService} for user validation.
+ * 
+ * @see ModelMapper used to convert {@link RentalEntity} to
+ *      {@link RentalResponse}
+ *      with its specific configuration in {@link AppConfig} configuration file.
+ *      </p>
+ */
 @Service
 @Slf4j
 public class DefaultRentalService implements RentalService {
@@ -24,6 +39,16 @@ public class DefaultRentalService implements RentalService {
     private UserManagementService userManagementService;
     private final ModelMapper modelMapper;
 
+    /**
+     * Constructs a {@code DefaultRentalService} with the necessary dependencies.
+     * 
+     * @param rentalRepository      the repository for managing rental data
+     * @param userManagementService the service for managing user-related operations
+     * @param modelMapper           the model mapper to convert entities to DTOs
+     * 
+     *
+     * 
+     */
     public DefaultRentalService(
             RentalRepository rentalRepository,
             UserManagementService userManagementService,
@@ -34,6 +59,16 @@ public class DefaultRentalService implements RentalService {
         this.modelMapper = modelMapper;
     }
 
+    /**
+     * Retrieves all rentals.
+     * <p>
+     * This method retrieves all rental entities from the database and maps them to
+     * DTOs
+     * in order to be used by controller.
+     * </p>
+     * 
+     * @return a list of {@link RentalResponse} objects representing all rentals
+     */
     @Override
     public List<RentalResponse> getAllRentals() {
 
@@ -47,6 +82,18 @@ public class DefaultRentalService implements RentalService {
 
     }
 
+    /**
+     * Retrieves a rental by its ID.
+     * 
+     * <p>
+     * This method is intented to be used by controller.
+     * </p>
+     * 
+     * @param id the ID of the rental to retrieve
+     * @return an {@link Optional} containing a {@link RentalResponse} if found,
+     *         otherwise empty
+     * @throws IllegalArgumentException if the provided ID is {@code null}
+     */
     @Override
     public Optional<RentalResponse> getRentalById(Long id) {
         if (id == null) {
@@ -57,6 +104,15 @@ public class DefaultRentalService implements RentalService {
                 .map(rentalEntity -> modelMapper.map(rentalEntity, RentalResponse.class));
     }
 
+    /**
+     * Retrieves a rental entity by its ID.
+     * <p>
+     * This method should only be used by other services.
+     * </p>
+     * 
+     * @param id the ID of the rental entity
+     * @return an {@link Optional} containing the {@link RentalEntity} if found
+     */
     @Override
     public Optional<RentalEntity> getRentalEntityById(Long id) {
         return rentalRepository.findById(id);
