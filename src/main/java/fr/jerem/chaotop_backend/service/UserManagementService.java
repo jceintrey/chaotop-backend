@@ -25,13 +25,13 @@ public interface UserManagementService {
 
     public Optional<UserDetails> getUserbyEmail(String email);
 
-    public Optional<Integer> getUserId(String email);
+    public Optional<Long> getUserId(String email);
 
     public UserProfileResponse getUserInformationResponse(String email);
 
     public boolean isEmailAlreadyUsed(String email);
 
-    public Optional<DataBaseEntityUser> getUserById(Integer userId);
+    public Optional<DataBaseEntityUser> getUserById(Long userId);
 
 
 }

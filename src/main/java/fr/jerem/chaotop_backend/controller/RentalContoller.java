@@ -111,13 +111,13 @@ public class RentalContoller {
         }
 
         String email = optionalAuthenticatedUserEmail.get();
-        Optional<Integer> optionalUserId = userManagementService.getUserId(email);
+        Optional<Long> optionalUserId = userManagementService.getUserId(email);
         if (optionalUserId.isEmpty()) {
             log.error("No Id found for email {}", email);
             return ResponseEntity.internalServerError().build();
         }
 
-        Integer userId = optionalUserId.get();
+        Long userId = optionalUserId.get();
         try {
             // TODO a specific service to store image
 

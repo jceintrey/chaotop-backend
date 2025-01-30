@@ -7,6 +7,7 @@ import java.util.Optional;
 import fr.jerem.chaotop_backend.dto.RentalResponse;
 import fr.jerem.chaotop_backend.model.RentalEntity;
 
+
 public interface RentalService {
 
     /**
@@ -50,7 +51,7 @@ public interface RentalService {
      * @return the ID of the new Rental
      */
     Integer createRental(String name, double surface, BigDecimal price, String picture,
-            String description, Integer userId);
+            String description, Long userId);
 
     /**
      * Updates a rental entity if exist with args values.

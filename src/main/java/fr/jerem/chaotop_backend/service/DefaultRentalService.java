@@ -64,7 +64,7 @@ public class DefaultRentalService implements RentalService {
 
     @Override
     public Integer createRental(String name, double surface, BigDecimal price, String picture,
-            String description, Integer userId) {
+            String description, Long userId) {
         if (userId == null)
             throw new IllegalArgumentException("Invalid userId");
 

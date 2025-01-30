@@ -5,8 +5,6 @@ import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -71,16 +69,14 @@ public class AuthController {
     public ResponseEntity<UserProfileResponse> getUserInformations() {
         log.debug("@GetMapping(\"/me\")");
 
-
         Optional<String> optionalAuthenticatedUserEmail = authenticationService.getAuthenticatedUserEmail();
 
-        
         if (optionalAuthenticatedUserEmail.isEmpty()) {
             log.error("No authenticated user found.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new UserProfileResponse("", "", "", ""));
+                    .body(new UserProfileResponse(null, "", "", "", ""));
         }
-    
+
         String email = optionalAuthenticatedUserEmail.get();
         try {
             UserProfileResponse meResponse = userManagementService.getUserInformationResponse(email);
@@ -88,7 +84,7 @@ public class AuthController {
             if (meResponse.getEmail().isEmpty()) {
                 log.error("Error fetching user details for email: {}", email);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(new UserProfileResponse("", "", "", ""));
+                        .body(new UserProfileResponse(null, "", "", "", ""));
             }
 
             log.debug("Return response: {}", meResponse.toString());
@@ -97,7 +93,7 @@ public class AuthController {
         } catch (Exception e) {
             log.error("Unexpected error: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new UserProfileResponse("", "", "", ""));
+                    .body(new UserProfileResponse(null, "", "", "", ""));
         }
     }
 

@@ -57,9 +57,9 @@ public class DefaultUserManagementService implements UserManagementService {
     }
 
     @Override
-    public Optional<Integer> getUserId(String email) {
+    public Optional<Long> getUserId(String email) {
         return Optional.ofNullable(this.userRepository.findByEmail(email))
-                .map(user -> user.getId());
+                .map(user -> Long.valueOf(user.getId().longValue()));
     }
 
     /**
@@ -80,27 +80,34 @@ public class DefaultUserManagementService implements UserManagementService {
             // Cast to AppUserDetails to get detail user fields
             AppUserDetails appUserDetails = (AppUserDetails) userDetails;
             return new UserProfileResponse(
+                    appUserDetails.getId(),
                     appUserDetails.getName(),
                     appUserDetails.getEmail(),
                     appUserDetails.getCreatedAt().toString(),
                     appUserDetails.getUpdatedAt().toString());
         }).orElseGet(() -> {
             // return empty UserProfileResponse if user not found
-            return new UserProfileResponse("", "", "", "");
+            return new UserProfileResponse(null, "", "", "", "");
         });
     }
 
     @Override
     public boolean isEmailAlreadyUsed(String email) {
 
-        Optional<Integer> optionalUserId = getUserId(email);
+        Optional<Long> optionalUserId = getUserId(email);
 
         return optionalUserId.isPresent();
     }
 
     @Override
-    public Optional<DataBaseEntityUser> getUserById(Integer userId) {
-        return userRepository.findById(userId);
+    public Optional<DataBaseEntityUser> getUserById(Long userId) {
+
+        try {
+            Integer userIdInteger = Math.toIntExact(userId);
+            return userRepository.findById(userIdInteger);
+        } catch (ArithmeticException e) {
+            throw new IllegalArgumentException("userId is out of bounds for Integer: " + userId, e);
+        }
     }
 
 }
