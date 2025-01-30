@@ -11,6 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,7 +35,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "messages")
-public class Message {
+public class MessageEntity {
 
     @Id
     @Column(name = "id")
@@ -49,6 +51,8 @@ public class Message {
     private DataBaseEntityUser user;
 
     @Column(name = "message", length = 2000)
+    @NotBlank(message = "Message cannot be empty")
+    @Size(max = 2000, message = "Message cannot exceed 2000 characters")
     private String message;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
