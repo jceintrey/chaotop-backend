@@ -119,9 +119,8 @@ public class RentalContoller {
 
         Long userId = optionalUserId.get();
         try {
-            // TODO a specific service to store image
 
-            Integer rentalId = rentalService.createRental(name, surface, price, null, description, userId);
+            Integer rentalId = rentalService.createRental(name, surface, price, picture, description, userId);
 
             URI location = URI.create("/api/rentals/" + rentalId);
             return ResponseEntity.created(location).body(new RentalCreateResponse("Rental created!"));
