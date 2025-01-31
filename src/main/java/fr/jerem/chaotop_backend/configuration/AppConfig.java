@@ -16,7 +16,6 @@ import fr.jerem.chaotop_backend.repository.UserRepository;
 import fr.jerem.chaotop_backend.service.JwtFactory;
 import fr.jerem.chaotop_backend.service.StorageService;
 import fr.jerem.chaotop_backend.service.UserManagementService;
-import org.springframework.beans.factory.annotation.Value;
 
 import fr.jerem.chaotop_backend.service.CloudinaryStorageService;
 import fr.jerem.chaotop_backend.service.DefaultUserManagementService;
@@ -24,18 +23,13 @@ import fr.jerem.chaotop_backend.service.HmacJwtFactory;
 
 @Configuration
 public class AppConfig {
-    @Value("${cloudinary.cloud_name}")
-    private String cloudinaryCloudName;
-
-    @Value("${cloudinary.api_key}")
-    private String cloudinaryApiKey;
-
-    @Value("${cloudinary.api_secret}")
-    private String cloudinaryApiSecret;
 
     @Bean
-    public StorageService storageService() {
-        return new CloudinaryStorageService(cloudinaryCloudName, cloudinaryApiKey, cloudinaryApiSecret);
+    public StorageService storageService(AppConfigProperties appConfigProperties) {
+        return new CloudinaryStorageService(
+                appConfigProperties.getCloudinarycloudname(),
+                appConfigProperties.getCloudinaryapikey(),
+                appConfigProperties.getCloudinaryapisecret());
     }
 
     @Bean

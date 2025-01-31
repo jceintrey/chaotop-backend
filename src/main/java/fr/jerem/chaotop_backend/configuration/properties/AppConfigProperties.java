@@ -22,4 +22,8 @@ public class AppConfigProperties {
     private String jwtsecretkey;
     private String jwtexpirationtime;
 
+    private String cloudinarycloudname;
+    private String cloudinaryapikey;
+    private String cloudinaryapisecret;
+
 }

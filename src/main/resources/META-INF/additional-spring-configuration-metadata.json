@@ -33,5 +33,25 @@
     "name": "cloudinary.api_secret",
     "type": "java.lang.String",
     "description": "A description for 'cloudinary.api_secret'"
+  },
+  {
+    "name": "chaotop.cloudinary.cloud_name",
+    "type": "java.lang.String",
+    "description": "A description for 'chaotop.cloudinary.cloud_name'"
+  },
+  {
+    "name": "chaotop.cloudinarycloudname",
+    "type": "java.lang.String",
+    "description": "A description for 'chaotop.cloudinarycloudname'"
+  },
+  {
+    "name": "chaotop.cloudinaryapikey",
+    "type": "java.lang.String",
+    "description": "A description for 'chaotop.cloudinaryapikey'"
+  },
+  {
+    "name": "chaotop.cloudinaryapisecret",
+    "type": "java.lang.String",
+    "description": "A description for 'chaotop.cloudinaryapisecret'"
   }
 ]}
