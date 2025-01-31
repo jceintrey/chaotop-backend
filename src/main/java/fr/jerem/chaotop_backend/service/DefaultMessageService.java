@@ -13,6 +13,13 @@ import fr.jerem.chaotop_backend.model.RentalEntity;
 import fr.jerem.chaotop_backend.repository.MessageRepository;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Default implementation of {@link MessageService}.
+ * <p>
+ * This service handles the creation of messages by validating the existence of  
+ * both the user and the rental before persisting the message to the database.
+ * </p>
+ */
 @Service
 @Slf4j
 public class DefaultMessageService implements MessageService {

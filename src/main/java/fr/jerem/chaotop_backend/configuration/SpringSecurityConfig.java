@@ -17,7 +17,6 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import fr.jerem.chaotop_backend.service.DatabaseUserDetailsService;
 import fr.jerem.chaotop_backend.service.JwtFactory;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,12 +29,8 @@ import lombok.extern.slf4j.Slf4j;
  * authentication manager setup.
  * </p>
  * <p>
- * - {@link SecurityFilterChain} configures the access control and login/logout
- * functionality.
- * - {@link PasswordEncoder} defines the password encoding mechanism, using
- * BCrypt hashing.
- * - {@link AuthenticationManager} sets up the authentication manager,
- * integrating with the custom user details service.
+ * - {@link UserDetailsService} loads user-specific data
+ * - {@link JwtFactory} provides Encoder, Decoder and String encoded Tokens
  * </p>
  * 
  */
@@ -45,8 +40,8 @@ import lombok.extern.slf4j.Slf4j;
 public class SpringSecurityConfig {
 
     private final UserDetailsService userDetailsService;
-
     private final JwtFactory jwtFactory;
+
     private static final String[] AUTH_WHITELIST = {
             "/api/auth/login",
             "/api/auth/register",
@@ -67,9 +62,11 @@ public class SpringSecurityConfig {
      * <p>
      * This configuration:
      * - Disables CSRF protection (may need to be adjusted for specific use cases).
-     * - Permits access to the root URL ("/") without authentication.
+     * - Permits access to the {@link AUTH_WHITELIST} URL without authentication.
      * - Requires authentication for all other requests.
-     * - Configures form-based login and logout with default settings.
+     * - Configures Spring Security to act as an OAuth Ressource Server and enforce
+     * jwt
+     * authentication
      * </p>
      * 
      * @param http the {@link HttpSecurity} instance used to configure HTTP security
@@ -89,8 +86,9 @@ public class SpringSecurityConfig {
     }
 
     /**
-     * Configures the {@link PasswordEncoder} bean to use BCrypt for password
-     * encoding.
+     * This bean is requierd by Spring security and provides a
+     * {@link PasswordEncoder} to use
+     * BCrypt for password encoding.
      * <p>
      * BCrypt is a secure hashing algorithm used to protect user passwords in the
      * database.
@@ -105,18 +103,14 @@ public class SpringSecurityConfig {
 
     /**
      * Configures the Spring Security {@link AuthenticationManager} bean, which is
-     * responsible for
-     * authenticating users.
+     * responsible for authenticating users. This bean is requierd by Spring
+     * security.
      * <p>
-     * This method integrates with {@link DatabaseUserDetailsService} to load
-     * user
-     * details and the {@link PasswordEncoder}
-     * to verify user credentials during authentication.
      * </p>
      * 
      * @param http            the {@link HttpSecurity} instance, required for
-     *                        configuring authentication
-     * @param passwordEncoder the {@link PasswordEncoder} used to check passwords
+     *                        configuring authentication.
+     * @param passwordEncoder the {@link PasswordEncoder} used to check passwords.
      * @return the configured {@link AuthenticationManager} bean
      * @throws Exception if there is a configuration error
      */
@@ -129,19 +123,26 @@ public class SpringSecurityConfig {
         return authenticationManagerBuilder.build();
     }
 
+    /**
+     * Get a JwtDecoder from the factory. This bean is requierd by Spring security.
+     * 
+     * @return the configured {@link JwtDecoder} bean
+     * 
+     */
     @Bean
     public JwtDecoder JwtDecoder() {
         return this.jwtFactory.createJwtDecoder();
     }
 
+    /**
+     * Get a JwtEncoder from the factory. This bean is requierd by Spring security.
+     * 
+     * @return the configured {@link JwtEncoder} bean
+     * 
+     */
     @Bean
     public JwtEncoder JwtEncoder() {
         return this.jwtFactory.createJwtEncoder();
     }
-
-    // @Bean
-    // public JwtFactory JwtFactory() {
-    // return this.jwtFactory;
-    // }
 
 }

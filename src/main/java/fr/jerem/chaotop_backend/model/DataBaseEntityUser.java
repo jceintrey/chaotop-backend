@@ -23,8 +23,7 @@ import lombok.Setter;
  * 
  * <p>
  * The {@code email} field is marked as unique to ensure no duplicate user
- * emails
- * exist in the system.
+ * emails exist in the system.
  * </p>
  * Lombock is used to generate Getters/Setters and the empty constructor needed
  * by JPA.

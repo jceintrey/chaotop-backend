@@ -21,17 +21,25 @@ import fr.jerem.chaotop_backend.repository.RentalRepository;
 import fr.jerem.chaotop_backend.repository.UserRepository;
 
 /**
- * Configures sample data like a sample User and their encrypted password
+ * Configures sample data:
+ *  - sample User and their encrypted password
+ *  - sample rentals
+ *  - sample messages
  * <p>
+ * Each CommandLineRunner is ordered using Order(x) annotation
  */
+
+
 @Configuration
 public class SampleConfig {
+
+
     /**
-     * Responsible of users creation
+     * Create a set of sample users
      * 
      * @param userRepository
      * @param passwordEncoder
-     * @return
+     * @return {@link CommandLineRunner}
      */
     @Bean
     @Order(1)
@@ -72,7 +80,7 @@ public class SampleConfig {
     }
 
     /**
-     * The method generate a random password
+     * Generate a random password using Passay library
      * 
      * @return String generated password
      */
@@ -88,6 +96,13 @@ public class SampleConfig {
                 Arrays.asList(lowerCaseRule, upperCaseRule, digitRule));
     }
 
+     /**
+     * Create a set of Rentals
+     * 
+     * @param userRepository
+     * @param passwordEncoder
+     * @return {@link CommandLineRunner}
+     */
     @Bean
     @Order(2)
     public CommandLineRunner createSampleRentals(RentalRepository rentalRepository, UserRepository userRepository) {

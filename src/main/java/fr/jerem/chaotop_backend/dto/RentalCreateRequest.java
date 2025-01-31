@@ -9,6 +9,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
+/**
+ * DTO for a rental creation request.
+ * <p>
+ * Represents the expected request body for rental creation.
+ * </p>
+ */
 @Data
 public class RentalCreateRequest {
     @NotBlank(message = "Name is required")

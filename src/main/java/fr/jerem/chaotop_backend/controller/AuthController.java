@@ -19,6 +19,17 @@ import fr.jerem.chaotop_backend.service.AuthenticationService;
 import fr.jerem.chaotop_backend.service.UserManagementService;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Controller class used for authentication purpose
+ * <p>
+ * This class implements the authentication endpoints of the application
+ * </p>
+ * <p>
+ * - {@link AuthenticationService} service that process the user authentication
+ * - {@link UserManagementService} service used for business operations on users
+ * </p>
+ * 
+ */
 @RestController
 @RequestMapping("/api/auth")
 @Slf4j
@@ -37,15 +48,14 @@ public class AuthController {
     }
 
     /**
-     * Mapping with POST method used to request a token to consum the api
+     * Login to the API.
      * 
      * <p>
-     * This method first authenticate the Post request mapped to the DTO
-     * LoginRequest
-     * and then authenticate the user credentials.
-     * If authentication is ok, generate and return a token in the DTO TokenResponse
+     * This method authenticates using POST parameters and return back
+     * a Json Web Token.
      * 
-     * @return {@link ResponseEntity<TokenResponse>}
+     * @param {@link LoginRequest} the request DTO.
+     * @return {@link TokenResponse} the response DTO.
      */
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
@@ -60,9 +70,14 @@ public class AuthController {
     }
 
     /**
-     * Mapping with Get method used to check the api connectivity
+     * Get user informations.
      * 
-     * @return {@link ResponseEntity<Map<String, String>>}
+     * <p>
+     * Use the {@link AuthenticationService} to retrieve the authenticated user.
+     * 
+     * </p>
+     * 
+     * @return {@link UserProfileResponse} the response DTO.
      * 
      */
     @GetMapping("/me")
@@ -98,11 +113,16 @@ public class AuthController {
     }
 
     /**
-     * Mapping with POST method used to register a user to the application
-     *
+     * Create a new user.
+     * 
      * <p>
-     *
-     * @return {@link ResponseEntity<TokenResponse>}
+     * Use the {@link UserManagementService} to create the new User.
+     * Use the {@link AuthenticationService} to retrieve the authenticated user.
+     * </p>
+     * 
+     * @param {@link RegisterRequest} the request DTO.
+     * @return {@link UserProfileResponse} the response DTO.
+     * 
      */
     @PostMapping("/register")
     public ResponseEntity<TokenResponse> register(@RequestBody RegisterRequest request) {

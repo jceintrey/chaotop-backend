@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import fr.jerem.chaotop_backend.dto.MessageRequest;
+import fr.jerem.chaotop_backend.dto.MessageResponse;
 import fr.jerem.chaotop_backend.dto.RentalCreateResponse;
 import fr.jerem.chaotop_backend.dto.RentalListResponse;
 import fr.jerem.chaotop_backend.dto.RentalResponse;
@@ -29,6 +31,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
+
+/**
+ * Controller class responsible for handling rental-related operations.
+ * <p>
+ * This class provides endpoints for creating, updating and retrieving rentals.
+ * </p>
+ * <p>
+ * - {@link RentalService} service that manage rentals.
+ * - {@link AuthenticationService} service that handles authentications.
+ * - {@link UserManagementService} service that manage users.
+ * </p>
+ * 
+ */
 @RestController
 @RequestMapping("/api/rentals")
 @Slf4j
@@ -48,12 +63,14 @@ public class RentalContoller {
         log.debug("RentalContoller initialized.");
     }
 
-    /**
-     * Retrieves all rentals.
+   /**
+     * Retrieve all rentals.
      * 
-     * @return {@link ResponseEntity} containing the {@link RentalListResponse}
-     *         representing a list of {@link RentalResponse}
+     * <p>
+     * Use {@link RentalService} to get all rentals.
+     * </p>
      * 
+     * @return {@link RentalListResponse} the response DTO.
      */
     @GetMapping("")
     public ResponseEntity<RentalListResponse> getAllRentals() {
@@ -68,8 +85,8 @@ public class RentalContoller {
      * Retrieves a rental by its ID.
      * 
      * @param id The ID of the rental to retrieve.
-     * @return {@link ResponseEntity} containing the {@link RentalResponse} if
-     *         found, otherwise a 404 response.
+     * 
+     * @return {@link RentalResponse} the response DTO.
      */
     @GetMapping("/{id}")
     public ResponseEntity<RentalResponse> getRentalById(@PathVariable("id") final Long id) {
@@ -84,6 +101,13 @@ public class RentalContoller {
 
     /**
      * Creates a new rental.
+     * 
+     * <p>
+     * TODO Use a fileStorage service to store the picture.
+     * Use {@link AuthenticationService} to retrieve the authenticated user.
+     * Use {@link userManagementService} to retrieve detailed informations for the user.
+     * Use {@link rentalService} to create the new rental.
+     * </p>
      * 
      * @param name        The name of the rental.
      * @param surface     The surface area of the rental.
@@ -103,13 +127,13 @@ public class RentalContoller {
 
         log.debug("@PostMapping(\"\")");
 
+        //Retrieve the authenticated user email
         Optional<String> optionalAuthenticatedUserEmail = authenticationService.getAuthenticatedUserEmail();
-
         if (optionalAuthenticatedUserEmail.isEmpty()) {
             log.error("No authenticated user found.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
+        //Get the id corresponding to the user email
         String email = optionalAuthenticatedUserEmail.get();
         Optional<Long> optionalUserId = userManagementService.getUserId(email);
         if (optionalUserId.isEmpty()) {
@@ -121,6 +145,7 @@ public class RentalContoller {
         try {
 
             Integer rentalId = rentalService.createRental(name, surface, price, picture, description, userId);
+
 
             URI location = URI.create("/api/rentals/" + rentalId);
             return ResponseEntity.created(location).body(new RentalCreateResponse("Rental created!"));
@@ -138,8 +163,7 @@ public class RentalContoller {
      * @param surface     The updated surface area of the rental.
      * @param price       The updated price of the rental.
      * @param description The updated description of the rental.
-     * @return ResponseEntity containing the updated RentalResponse if found,
-     *         otherwise a 404 response.
+     * @return {@link RentalResponse} the update rental.
      */
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RentalResponse> updateRental(

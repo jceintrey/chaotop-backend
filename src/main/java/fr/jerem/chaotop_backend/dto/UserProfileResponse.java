@@ -4,6 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * DTO for a user profile response.
+ * <p>
+ * Represents the response body returned after /me call.
+ * </p>
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
