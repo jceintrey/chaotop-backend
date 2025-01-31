@@ -7,6 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * DTO for a rental response.
+ * <p>
+ * Represents the response body returned after rental creation or retrieve.
+ * </p>
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

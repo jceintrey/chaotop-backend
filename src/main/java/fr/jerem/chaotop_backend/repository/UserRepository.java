@@ -5,14 +5,14 @@ import org.springframework.stereotype.Repository;
 
 import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
 
-
 /**
- * Repository interface for managing {@link DataBaseEntityUser} entities.
- * 
- * <p>This interface provides basic CRUD operations through JpaRepository
- * and defines a custom query method to find users by their email address.</p>
- * 
- * 
+ * Repository interface for managing {@link DataBaseEntityUser} persistence.  
+ * <p>  
+ * Extends {@link JpaRepository} to provide standard CRUD operations  
+ * and database interactions for message entities.  
+ * </p>  
+ *  
+ * @see JpaRepository  
  */
 @Repository
 public interface UserRepository extends JpaRepository<DataBaseEntityUser, Integer> {

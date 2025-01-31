@@ -4,20 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
- * DTO that represents a login response
+ * DTO that represents a Token response
  * 
- * This class is used to return a structured json response with the jwt token
- * Example:
- * { jwt: ""}
- * <p>
- * Lombock is used to generate Getters/Setters
+ * This class is used to return the Json Web Token
  * 
  */
 @Data
 @AllArgsConstructor
 public class TokenResponse {
-    /**
-     * Le jeton JWT généré pour l'authentification de l'utilisateur.
-     */
     private String token;
 }

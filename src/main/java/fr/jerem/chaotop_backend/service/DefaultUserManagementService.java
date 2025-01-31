@@ -14,16 +14,12 @@ import fr.jerem.chaotop_backend.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * UserService class for managing users
- * 
+ * Implementation of {@link UserManagementService} responsible for handling user-related operations.
  * <p>
- * This class provides functionality for creating new users and handling user
- * data.
- * It interacts with the {@link UserRepository} for persistence and uses a
- * {@link PasswordEncoder} to store passwords.
+ * This service provides functionalities for user creation, retrieval, and validation.
+ * It interacts with the {@link UserRepository} to persist and fetch user data.
+ * It uses the {@link PasswordEncoder} to hash the password before storing in the database.
  * </p>
- * 
- * 
  */
 @Service
 @Slf4j
@@ -32,11 +28,28 @@ public class DefaultUserManagementService implements UserManagementService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * Constructs a {@code DefaultUserManagementService} with the necessary dependencies.
+     *
+     * @param userRepository  the repository handling user persistence
+     * @param passwordEncoder the encoder for hashing user passwords
+     */
     public DefaultUserManagementService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
+      /**
+     * Creates a new user with the given credentials.
+     * <p>
+     * The password is hashed before being stored in the database.
+     * </p>
+     *
+     * @param email         the email of the new user
+     * @param plainPassword the raw password before encoding
+     * @param name          the name of the new user
+     * @return an {@link AppUserDetails} object representing the newly created user
+     */
     @Override
     public AppUserDetails createUser(String email, String plainPassword, String name) {
 

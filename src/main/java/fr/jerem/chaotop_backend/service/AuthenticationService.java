@@ -17,13 +17,12 @@ import fr.jerem.chaotop_backend.dto.TokenResponse;
  * Service responsible for handling user authentication and token generation.
  * <p>
  * This service interacts with the {@link AuthenticationManager} to authenticate
- * user credentials
- * and with the {@link JwtFactory} to generate a JWT token upon successful
- * authentication.
+ * user credentials and with the {@link JwtFactory} to generate a JWT token upon
+ * successful authentication.
  * It provides a method {@link #authenticate(LoginRequest)} that takes a
- * {@link LoginRequest},
- * authenticates the user, and returns a {@link TokenResponse} containing the
- * generated JWT token.
+ * {@link LoginRequest}, authenticates the user, and returns a
+ * {@link TokenResponse}
+ * containing the generated JWT token.
  * </p>
  * 
  */
@@ -37,6 +36,19 @@ public class AuthenticationService {
         this.jwtFactory = jwtFactory;
     }
 
+    /**
+     * Authenticates a user based on the provided login credentials.
+     * <p>
+     * This method uses {@link AuthenticationManager} to verify the user's identity
+     * and get a JWT token upon successful authentication with the help of
+     * {@link jwtFactory}.
+     * </p>
+     * 
+     * @param {@link LoginRequest} the login request containing the user's email and
+     *               password
+     * @return a {@link TokenResponse} containing the generated JWT token
+     * @throws Exception if authentication fails
+     */
     public TokenResponse authenticate(LoginRequest request) throws Exception {
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -50,15 +62,24 @@ public class AuthenticationService {
         }
     }
 
-     public Optional<String> getAuthenticatedUserEmail() {
+    /**
+     * Retrieves the email of the currently authenticated user.
+     * <p>
+     * This method accesses the {@link SecurityContextHolder} to obtain the
+     * authentication details.
+     * </p>
+     * 
+     * @return an {@link Optional} containing the authenticated user's email, or
+     *         empty if no user is authenticated
+     */
+    public Optional<String> getAuthenticatedUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null && authentication.isAuthenticated() ) {
+        if (authentication != null && authentication.isAuthenticated()) {
             return Optional.ofNullable(authentication.getName());
         }
 
         return Optional.empty();
     }
 
-    
 }

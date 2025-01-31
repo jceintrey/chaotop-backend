@@ -7,14 +7,13 @@ import fr.jerem.chaotop_backend.model.RentalEntity;
 import java.util.Optional;
 
 /**
- * Repository interface for managing {@link RentalEntity} entities.
- * 
- * <p>
- * This interface provides basic CRUD operations through JpaRepository
- * and defines a custom query method to find rentals by their id
- * </p>
- * 
- * 
+ * Repository interface for managing {@link RentalEntity} persistence.  
+ * <p>  
+ * Extends {@link JpaRepository} to provide standard CRUD operations  
+ * and database interactions for message entities.  
+ * </p>  
+ *  
+ * @see JpaRepository  
  */
 @Repository
 public interface RentalRepository extends JpaRepository<RentalEntity, Long> {

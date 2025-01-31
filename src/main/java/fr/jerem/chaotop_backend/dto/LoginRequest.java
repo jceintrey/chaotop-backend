@@ -5,12 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO that represents a login request posted on the login endpoint
- * 
- * This class is used to get the structure of the body parameters
+ * DTO for a login request.
  * <p>
- * Lombock is used to generate Getters/Setters
- * 
+ * Represents the expected request body for user authentication.
+ * </p>
  */
 @Data
 @NoArgsConstructor
