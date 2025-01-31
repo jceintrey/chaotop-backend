@@ -4,8 +4,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import fr.jerem.chaotop_backend.dto.MessageRequest;
-import fr.jerem.chaotop_backend.dto.MessageResponse;
 import fr.jerem.chaotop_backend.dto.RentalCreateResponse;
 import fr.jerem.chaotop_backend.dto.RentalListResponse;
 import fr.jerem.chaotop_backend.dto.RentalResponse;
@@ -30,7 +28,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-
 
 /**
  * Controller class responsible for handling rental-related operations.
@@ -63,7 +60,7 @@ public class RentalContoller {
         log.debug("RentalContoller initialized.");
     }
 
-   /**
+    /**
      * Retrieve all rentals.
      * 
      * <p>
@@ -105,7 +102,8 @@ public class RentalContoller {
      * <p>
      * TODO Use a fileStorage service to store the picture.
      * Use {@link AuthenticationService} to retrieve the authenticated user.
-     * Use {@link userManagementService} to retrieve detailed informations for the user.
+     * Use {@link userManagementService} to retrieve detailed informations for the
+     * user.
      * Use {@link rentalService} to create the new rental.
      * </p>
      * 
@@ -127,13 +125,13 @@ public class RentalContoller {
 
         log.debug("@PostMapping(\"\")");
 
-        //Retrieve the authenticated user email
+        // Retrieve the authenticated user email
         Optional<String> optionalAuthenticatedUserEmail = authenticationService.getAuthenticatedUserEmail();
         if (optionalAuthenticatedUserEmail.isEmpty()) {
             log.error("No authenticated user found.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        //Get the id corresponding to the user email
+        // Get the id corresponding to the user email
         String email = optionalAuthenticatedUserEmail.get();
         Optional<Long> optionalUserId = userManagementService.getUserId(email);
         if (optionalUserId.isEmpty()) {
@@ -144,9 +142,13 @@ public class RentalContoller {
         Long userId = optionalUserId.get();
         try {
 
-            Integer rentalId = rentalService.createRental(name, surface, price, picture, description, userId);
+            Optional<Integer> OptionalrentalId = rentalService.createRental(name, surface, price, picture, description,
+                    userId);
 
+            if (OptionalrentalId.isEmpty())
+                return ResponseEntity.status(500).body(new RentalCreateResponse("Error: "));
 
+            Integer rentalId = OptionalrentalId.get();
             URI location = URI.create("/api/rentals/" + rentalId);
             return ResponseEntity.created(location).body(new RentalCreateResponse("Rental created!"));
 

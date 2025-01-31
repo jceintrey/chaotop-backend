@@ -124,7 +124,7 @@ public class DefaultRentalService implements RentalService {
     }
 
     @Override
-    public Integer createRental(String name, double surface, BigDecimal price, MultipartFile picture,
+    public Optional<Integer> createRental(String name, double surface, BigDecimal price, MultipartFile picture,
             String description, Long userId) {
         if (userId == null)
             throw new IllegalArgumentException("Invalid userId");
@@ -146,15 +146,15 @@ public class DefaultRentalService implements RentalService {
             rentalEntity.setCreatedAt(LocalDateTime.now());
             rentalEntity.setUpdatedAt(LocalDateTime.now());
 
-            rentalRepository.save(rentalEntity);
-            // TODO: return the correct rental id
-            return 0;
+            RentalEntity savedRentalEntity = rentalRepository.save(rentalEntity);
+
+            return Optional.of(savedRentalEntity.getId());
         } catch (IOException ioException) {
             log.error("Fail to upload the picture.", ioException);
-            return 0;
+            return Optional.empty();
         } catch (Exception e) {
             log.error("An error has occured.", e);
-            return 0;
+            return Optional.empty();
 
         }
 
