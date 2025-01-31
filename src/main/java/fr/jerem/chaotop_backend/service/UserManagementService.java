@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
-import fr.jerem.chaotop_backend.dto.RentalResponse;
 import fr.jerem.chaotop_backend.dto.UserProfileResponse;
 import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
 

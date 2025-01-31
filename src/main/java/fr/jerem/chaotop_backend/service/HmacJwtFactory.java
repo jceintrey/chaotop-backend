@@ -1,10 +1,8 @@
 package fr.jerem.chaotop_backend.service;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -14,10 +12,6 @@ import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
-import fr.jerem.chaotop_backend.configuration.AppConfig;
-import fr.jerem.chaotop_backend.dto.RentalResponse;
-import fr.jerem.chaotop_backend.model.RentalEntity;
-import fr.jerem.chaotop_backend.repository.RentalRepository;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
