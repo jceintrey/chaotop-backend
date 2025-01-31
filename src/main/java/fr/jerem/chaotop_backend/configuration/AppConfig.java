@@ -6,9 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
-
 import fr.jerem.chaotop_backend.configuration.properties.AppConfigProperties;
 import fr.jerem.chaotop_backend.dto.RentalResponse;
 import fr.jerem.chaotop_backend.model.RentalEntity;

@@ -91,19 +91,42 @@ public class SampleConfig {
     @Order(2)
     public CommandLineRunner createSampleRentals(RentalRepository rentalRepository, UserRepository userRepository) {
         return args -> {
-            RentalEntity rental = new RentalEntity();
+            RentalEntity rental1 = new RentalEntity();
 
-            rental.setName("rental1");
-            rental.setSurface(432);
-            rental.setPrice(new BigDecimal(300));
-            rental.setPicture("https://blog.technavio.org/wp-content/uploads/2018/12/Online-House-Rental-Sites.jpg");
-            rental.setDescription(
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a lectus eleifend, varius massa ac, mollis tortor. Quisque ipsum nulla, faucibus ac metus a, eleifend efficitur augue. Integer vel pulvinar ipsum. Praesent mollis neque sed sagittis ultricies. Suspendisse congue ligula at justo molestie, eget cursus nulla tincidunt. Pellentesque elementum rhoncus arcu, viverra gravida turpis mattis in. Maecenas tempor elementum lorem vel ultricies. Nam tempus laoreet eros, et viverra libero tincidunt a. Nunc vel nisi vulputate, sodales massa eu, varius erat.");
-            rental.setOwner(userRepository.findByEmail("bob@mail.tld"));
-            rental.setCreatedAt(LocalDateTime.now());
-            rental.setUpdatedAt(LocalDateTime.now());
+            rental1.setName("rental 1");
+            rental1.setSurface(153);
+            rental1.setPrice(new BigDecimal(350));
+            rental1.setPicture(
+                    "https://res.cloudinary.com/diqyy0y8d/image/upload/v1738317625/ddjqm1dtdbempi0v5rpl.webp");
+            rental1.setDescription(
+                    "Découvrez ce bel appartement offrant une vue imprenable sur le parc. " +
+                            "Idéal pour les amateurs de tranquillité, il dispose de deux chambres " +
+                            "spacieuses de 12m² et 15m², parfaites pour un We en couple, en famille " +
+                            "ou entre amis. Lumineux et bien agencé, cet espace vous séduira par son " +
+                            "charme et son confort.");
+            rental1.setOwner(userRepository.findByEmail("jsmith@ms.com"));
+            rental1.setCreatedAt(LocalDateTime.now());
+            rental1.setUpdatedAt(LocalDateTime.now());
 
-            rentalRepository.save(rental);
+            rentalRepository.save(rental1);
+
+            RentalEntity rental2 = new RentalEntity();
+
+            rental2.setName("rental 2");
+            rental2.setSurface(120);
+            rental2.setPrice(new BigDecimal(95));
+            rental2.setPicture(
+                    "https://res.cloudinary.com/diqyy0y8d/image/upload/v1738316363/um73ftudw9nfttqjoxh8.webp");
+            rental2.setDescription(
+                    "Découvrez cette jolie maison de lotissement offrant trois chambres, un salon " +
+                            "avec accès sur un jardin cloturé et arboré. Un garage vous permettra de ranger jusqu'à " +
+                            "deux voitures. Idéal pour séjour famillial.");
+            rental2.setOwner(userRepository.findByEmail("bob@mail.tld"));
+            rental2.setCreatedAt(LocalDateTime.now());
+            rental2.setUpdatedAt(LocalDateTime.now());
+
+            rentalRepository.save(rental2);
+
         };
 
     }
