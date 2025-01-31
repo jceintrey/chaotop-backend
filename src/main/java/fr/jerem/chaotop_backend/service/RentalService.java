@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import fr.jerem.chaotop_backend.dto.RentalResponse;
 import fr.jerem.chaotop_backend.model.RentalEntity;
 
@@ -59,7 +61,7 @@ public interface RentalService {
      * 
      * @return the ID of the new Rental
      */
-    Integer createRental(String name, double surface, BigDecimal price, String picture,
+    Integer createRental(String name, double surface, BigDecimal price, MultipartFile picture,
             String description, Long userId);
 
     /**

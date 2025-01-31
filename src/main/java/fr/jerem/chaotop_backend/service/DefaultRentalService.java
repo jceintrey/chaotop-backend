@@ -1,5 +1,6 @@
 package fr.jerem.chaotop_backend.service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import fr.jerem.chaotop_backend.configuration.AppConfig;
 import fr.jerem.chaotop_backend.dto.RentalResponse;
@@ -38,6 +40,7 @@ public class DefaultRentalService implements RentalService {
     private RentalRepository rentalRepository;
     private UserManagementService userManagementService;
     private final ModelMapper modelMapper;
+    private StorageService storageService;
 
     /**
      * Constructs a {@code DefaultRentalService} with the necessary dependencies.
@@ -52,11 +55,13 @@ public class DefaultRentalService implements RentalService {
     public DefaultRentalService(
             RentalRepository rentalRepository,
             UserManagementService userManagementService,
-            ModelMapper modelMapper) {
+            ModelMapper modelMapper,
+            StorageService storageService) {
 
         this.rentalRepository = rentalRepository;
         this.userManagementService = userManagementService;
         this.modelMapper = modelMapper;
+        this.storageService = storageService;
     }
 
     /**
@@ -119,7 +124,7 @@ public class DefaultRentalService implements RentalService {
     }
 
     @Override
-    public Integer createRental(String name, double surface, BigDecimal price, String picture,
+    public Integer createRental(String name, double surface, BigDecimal price, MultipartFile picture,
             String description, Long userId) {
         if (userId == null)
             throw new IllegalArgumentException("Invalid userId");
@@ -127,19 +132,31 @@ public class DefaultRentalService implements RentalService {
         DataBaseEntityUser datatBaseEntityUser = userManagementService.getUserById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
 
-        RentalEntity rentalEntity = new RentalEntity();
-        rentalEntity.setName(name);
-        rentalEntity.setSurface(surface);
-        rentalEntity.setPrice(price);
-        rentalEntity.setPicture(picture);
-        rentalEntity.setDescription(description);
-        rentalEntity.setOwner(datatBaseEntityUser);
-        rentalEntity.setCreatedAt(LocalDateTime.now());
-        rentalEntity.setUpdatedAt(LocalDateTime.now());
+        try {
+            String pictureUrl = storageService.uploadImage(picture);
 
-        rentalRepository.save(rentalEntity);
+            log.debug("pictureurl: " + pictureUrl);
+            RentalEntity rentalEntity = new RentalEntity();
+            rentalEntity.setName(name);
+            rentalEntity.setSurface(surface);
+            rentalEntity.setPrice(price);
+            rentalEntity.setPicture(pictureUrl);
+            rentalEntity.setDescription(description);
+            rentalEntity.setOwner(datatBaseEntityUser);
+            rentalEntity.setCreatedAt(LocalDateTime.now());
+            rentalEntity.setUpdatedAt(LocalDateTime.now());
 
-        return 0;
+            rentalRepository.save(rentalEntity);
+            // TODO: return the correct rental id
+            return 0;
+        } catch (IOException ioException) {
+            log.error("Fail to upload the picture.", ioException);
+            return 0;
+        } catch (Exception e) {
+            log.error("An error has occured.", e);
+            return 0;
+
+        }
 
     }
 

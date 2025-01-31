@@ -11,12 +11,23 @@ import fr.jerem.chaotop_backend.dto.RentalResponse;
 import fr.jerem.chaotop_backend.model.RentalEntity;
 import fr.jerem.chaotop_backend.repository.UserRepository;
 import fr.jerem.chaotop_backend.service.JwtFactory;
+import fr.jerem.chaotop_backend.service.StorageService;
 import fr.jerem.chaotop_backend.service.UserManagementService;
+
+import fr.jerem.chaotop_backend.service.CloudinaryStorageService;
 import fr.jerem.chaotop_backend.service.DefaultUserManagementService;
 import fr.jerem.chaotop_backend.service.HmacJwtFactory;
 
 @Configuration
 public class AppConfig {
+
+    @Bean
+    public StorageService storageService(AppConfigProperties appConfigProperties) {
+        return new CloudinaryStorageService(
+                appConfigProperties.getCloudinarycloudname(),
+                appConfigProperties.getCloudinaryapikey(),
+                appConfigProperties.getCloudinaryapisecret());
+    }
 
     @Bean
     public JwtFactory jwtFactory(AppConfigProperties appConfigProperties) {

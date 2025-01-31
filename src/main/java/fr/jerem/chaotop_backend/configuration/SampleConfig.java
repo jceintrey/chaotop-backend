@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.passay.*;
@@ -106,20 +107,41 @@ public class SampleConfig {
     @Order(2)
     public CommandLineRunner createSampleRentals(RentalRepository rentalRepository, UserRepository userRepository) {
         return args -> {
-            RentalEntity rental = new RentalEntity();
+            LocalDateTime now = LocalDateTime.now();
 
-            rental.setName("rental1");
-            rental.setSurface(432);
-            rental.setPrice(new BigDecimal(300));
-            rental.setPicture("https://blog.technavio.org/wp-content/uploads/2018/12/Online-House-Rental-Sites.jpg");
-            rental.setDescription(
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a lectus eleifend, varius massa ac, mollis tortor. Quisque ipsum nulla, faucibus ac metus a, eleifend efficitur augue. Integer vel pulvinar ipsum. Praesent mollis neque sed sagittis ultricies. Suspendisse congue ligula at justo molestie, eget cursus nulla tincidunt. Pellentesque elementum rhoncus arcu, viverra gravida turpis mattis in. Maecenas tempor elementum lorem vel ultricies. Nam tempus laoreet eros, et viverra libero tincidunt a. Nunc vel nisi vulputate, sodales massa eu, varius erat.");
-            rental.setOwner(userRepository.findByEmail("bob@mail.tld"));
-            rental.setCreatedAt(LocalDateTime.now());
-            rental.setUpdatedAt(LocalDateTime.now());
+            List<RentalEntity> rentals = List.of(
+            new RentalEntity("Bel appartement dans quartier chic", 153, new BigDecimal(250),
+                "https://res.cloudinary.com/diqyy0y8d/image/upload/v1738317625/ddjqm1dtdbempi0v5rpl.webp",
+                "Découvrez ce bel appartement offrant une vue imprenable sur le parc. " +
+                "Idéal pour les amateurs de tranquillité, il dispose de deux chambres " +
+                "spacieuses de 12m² et 15m², parfaites pour un week-end en couple, en famille " +
+                "ou entre amis. Lumineux et bien agencé, cet espace vous séduira par son " +
+                "charme et son confort.",
+                userRepository.findByEmail("jsmith@ms.com"),
+                now,
+                now
+            ),
+            new RentalEntity("Appartement moderne et spacieux ", 100, new BigDecimal(95),
+                "https://res.cloudinary.com/diqyy0y8d/image/upload/v1738334832/ptfbksijtpfctjsgb0sg.jpg",
+                "Découvrez ce joli petit appartement offrant une cuisine ouverte sur salon avec parquet " +
+                "avec accès sur balcon. Situé dans un quartier calme, le logement saura vous séduire... ",
+                userRepository.findByEmail("bob@mail.tld"),
+                now,
+                now
+            ),
+            new RentalEntity("Villa de luxe", 450, new BigDecimal(1000),
+            "https://res.cloudinary.com/diqyy0y8d/image/upload/v1738334725/suignxuixv5urvc3hz71.png",
+            "Découvrez cette magnifique villa avec piscine, 8 chambres, 3 salles de bain, 3 salons " +
+            "avec accès sur un parc magnifiquement arboré. Vous disposerez également d'un spa, d'un hamam, "+
+            "d'une salle de jeux avec billard, baby-foot, tables de jeux, d'une bibliothèque...",
+            userRepository.findByEmail("mmoore@great.com"),
+            now,
+            now
+        )
+        );
+        rentals.forEach(rental -> {rentalRepository.save(rental);});
 
-            rentalRepository.save(rental);
-        };
-
+       
+    }; 
     }
 }
