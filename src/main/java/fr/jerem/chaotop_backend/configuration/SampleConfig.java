@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.passay.*;
@@ -91,43 +92,41 @@ public class SampleConfig {
     @Order(2)
     public CommandLineRunner createSampleRentals(RentalRepository rentalRepository, UserRepository userRepository) {
         return args -> {
-            RentalEntity rental1 = new RentalEntity();
+            LocalDateTime now = LocalDateTime.now();
 
-            rental1.setName("rental 1");
-            rental1.setSurface(153);
-            rental1.setPrice(new BigDecimal(350));
-            rental1.setPicture(
-                    "https://res.cloudinary.com/diqyy0y8d/image/upload/v1738317625/ddjqm1dtdbempi0v5rpl.webp");
-            rental1.setDescription(
-                    "Découvrez ce bel appartement offrant une vue imprenable sur le parc. " +
-                            "Idéal pour les amateurs de tranquillité, il dispose de deux chambres " +
-                            "spacieuses de 12m² et 15m², parfaites pour un We en couple, en famille " +
-                            "ou entre amis. Lumineux et bien agencé, cet espace vous séduira par son " +
-                            "charme et son confort.");
-            rental1.setOwner(userRepository.findByEmail("jsmith@ms.com"));
-            rental1.setCreatedAt(LocalDateTime.now());
-            rental1.setUpdatedAt(LocalDateTime.now());
+            List<RentalEntity> rentals = List.of(
+            new RentalEntity("Bel appartement dans quartier chic", 153, new BigDecimal(250),
+                "https://res.cloudinary.com/diqyy0y8d/image/upload/v1738317625/ddjqm1dtdbempi0v5rpl.webp",
+                "Découvrez ce bel appartement offrant une vue imprenable sur le parc. " +
+                "Idéal pour les amateurs de tranquillité, il dispose de deux chambres " +
+                "spacieuses de 12m² et 15m², parfaites pour un week-end en couple, en famille " +
+                "ou entre amis. Lumineux et bien agencé, cet espace vous séduira par son " +
+                "charme et son confort.",
+                userRepository.findByEmail("jsmith@ms.com"),
+                now,
+                now
+            ),
+            new RentalEntity("Appartement moderne et spacieux ", 100, new BigDecimal(95),
+                "https://res.cloudinary.com/diqyy0y8d/image/upload/v1738334832/ptfbksijtpfctjsgb0sg.jpg",
+                "Découvrez ce joli petit appartement offrant une cuisine ouverte sur salon avec parquet " +
+                "avec accès sur balcon. Situé dans un quartier calme, le logement saura vous séduire... ",
+                userRepository.findByEmail("bob@mail.tld"),
+                now,
+                now
+            ),
+            new RentalEntity("Villa de luxe", 450, new BigDecimal(1000),
+            "https://res.cloudinary.com/diqyy0y8d/image/upload/v1738334725/suignxuixv5urvc3hz71.png",
+            "Découvrez cette magnifique villa avec piscine, 8 chambres, 3 salles de bain, 3 salons " +
+            "avec accès sur un parc magnifiquement arboré. Vous disposerez également d'un spa, d'un hamam, "+
+            "d'une salle de jeux avec billard, baby-foot, tables de jeux, d'une bibliothèque...",
+            userRepository.findByEmail("mmoore@great.com"),
+            now,
+            now
+        )
+        );
+        rentals.forEach(rental -> {rentalRepository.save(rental);});
 
-            rentalRepository.save(rental1);
-
-            RentalEntity rental2 = new RentalEntity();
-
-            rental2.setName("rental 2");
-            rental2.setSurface(120);
-            rental2.setPrice(new BigDecimal(95));
-            rental2.setPicture(
-                    "https://res.cloudinary.com/diqyy0y8d/image/upload/v1738316363/um73ftudw9nfttqjoxh8.webp");
-            rental2.setDescription(
-                    "Découvrez cette jolie maison de lotissement offrant trois chambres, un salon " +
-                            "avec accès sur un jardin cloturé et arboré. Un garage vous permettra de ranger jusqu'à " +
-                            "deux voitures. Idéal pour séjour famillial.");
-            rental2.setOwner(userRepository.findByEmail("bob@mail.tld"));
-            rental2.setCreatedAt(LocalDateTime.now());
-            rental2.setUpdatedAt(LocalDateTime.now());
-
-            rentalRepository.save(rental2);
-
-        };
-
+       
+    }; 
     }
 }
