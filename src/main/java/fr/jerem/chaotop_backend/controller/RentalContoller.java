@@ -146,14 +146,14 @@ public class RentalContoller {
                     userId);
 
             if (OptionalrentalId.isEmpty())
-                return ResponseEntity.status(500).body(new RentalCreateResponse("Error: "));
+                return ResponseEntity.status(500).body(new RentalCreateResponse("Error"));
 
             Integer rentalId = OptionalrentalId.get();
             URI location = URI.create("/api/rentals/" + rentalId);
             return ResponseEntity.created(location).body(new RentalCreateResponse("Rental created!"));
 
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new RentalCreateResponse("Error: " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RentalCreateResponse("Error"));
         }
     }
 
