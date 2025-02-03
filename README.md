@@ -59,18 +59,18 @@ MYSQL_USER=chaotop
 MYSQL_PASSWORD=pleasechangeit
 ```
 
-    Lancez MySQL avec Docker :
+### Lancez MySQL avec Docker :
 
 ```bash
 docker-compose up -d
 ```
 
 Cela démarre le serveur MySQL sur le port 3309 en local.
-Configurer l'application
+# Configurer l'application
 
 Dans le fichier src/main/resources/application.properties, vous pouvez définir les paramètres de connexion à la base de données et aux services Cloudinary :
 
-## Configurer l'application
+
 ### MySQL
 
 Créez la variable d'environnement CHAOTOP_DBKEY, si elle n'existe pas, la valeur définie par défaut dans application.properties sera utilisée (ne devrait pas être utilisée en environnement de production).
