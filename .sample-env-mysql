@@ -1,0 +1,4 @@
+MYSQL_ROOT_PASSWORD=pleasechooseastrongpassword
+MYSQL_DATABASE=chaotop
+MYSQL_USER=chaotop
+MYSQL_PASSWORD=chaotopdbuserpassword
