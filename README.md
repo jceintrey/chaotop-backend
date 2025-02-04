@@ -7,9 +7,10 @@ Sommaire
 1. [Description](#description)
 2. [Technologies](#technologies)
 3. [Installation](#installation)
-4. [Api endpoints](#api-endpoints)
-5. [Déploiement avec Docker](#déploiement-avec-docker)
-6. [Contribuer au projet](#contribuer-au-projet)
+4. [Accéder et utiliser l'API](#accéder-et-utiliser-lapi)
+5. [Api endpoints](#api-endpoints)
+6. [Déploiement avec Docker](#déploiement-avec-docker)
+7. [Contribuer au projet](#contribuer-au-projet)
 
 # Description
 
@@ -132,20 +133,30 @@ chaotop.jwtexpirationtime=3600000
 
 Le projet peut être facilement déployé avec Docker et Docker Compose.  
 ## Prérequis
-- Avec docker et docker compose installés.
+- Avoir docker et docker compose installés. Voir [Docker compose install](https://docs.docker.com/compose/install/) et [Docker install](https://docs.docker.com/engine/install/)
+
+```bash
+docker version
+docker compose version
+```
 - Avoir cloné les sources à partir du dépot origine ou du fork [Cloner le repository](#cloner-le-repository)
 - Avoir configuré le Connecteur de stockage cloudinary [le Connecteur de stockage cloudinary](#cloudinary-api-key)
 
 
 ## Configurer les variables d'environnement
-Renommez les fichiers exemple pour le setup des variables d'environnement
+Renommez les fichiers .sample-env* pour le setup des variables d'environnement
 ```bash
 mv .sample-env-chaotop .env-chaotop
 mv .sample-env-mysql .env-mysql 
 ```
-Note: attention à ne pas pas synchroniser .env* dans git
+> Attention à ne pas pas synchroniser .env* dans git (déclaré dans .gitigniore)
 
-- .env-chaotop
+Configurez ensuite les variables d'environnement:
+ - CHAOTOP_DBUSER et MYSQL_USER doivent être identitiques
+ - CHAOTOP_DBKEY et MYSQL_PASSWORD doivent être identitiques
+
+
+### .env-chaotop
 ```bash
 CHAOTOP_DBURL=jdbc:mysql://mysql:3306/chaotop
 CHAOTOP_DBUSER=chaotop
@@ -158,7 +169,7 @@ CHAOTOP_CLOUDINARYCLOUDNAME=thecloudinarycloudenv
 CHAOTOP_CLOUDINARYKEY=thecloudinarykey
 CHAOTOP_CLOUDINARYSECRET=thecloudinarysecret
 ```
-- .env-mysql
+### .env-mysql
 ```bash
 MYSQL_ROOT_PASSWORD=pleasechooseastrongpassword
 MYSQL_DATABASE=chaotop
@@ -181,7 +192,7 @@ COPY ./target/chaotop-backend-0.0.1-SNAPSHOT.jar chaotop-backend.jar
 ENTRYPOINT ["java", "-jar", "/chaotop-backend.jar"]
 ```
 ### Option 2 : Dockerfile complet permettant de faire le build à partir des sources du projet
-Le fichier Dockerfile est fourni à la racine de l'application.
+Le fichier Dockerfile est déjà présent à la racine de l'application.
 
 ```bash
 # Maven image used to build
@@ -214,9 +225,9 @@ ENTRYPOINT ["java", "-jar", "/app/chaotop-backend.jar"]
 ```
 
 ## docker-compose.yml : Utilisez ensuite le fichier docker-compose.yml fourni
-Le fichier docker-compose.yml est fourni à la racine de l'application.
+Le fichier docker-compose.yml est présent à la racine de l'application.
 
-Pour construire (la première fois) et exécuter l'application
+Pour construire exécuter l'application
 ```bash
 docker compose up -d
 ```
@@ -228,6 +239,14 @@ docker compose up -d
 docker compose ps
 docker compose logs -f --tail=10
 ```
+
+# Accéder et utiliser l'api
+L'api est disponible par défaut à l'adresse : http://localhost:8080
+  - le port peut être modifié via le setup de la variable CHAOTOP_SERVERPORT (par défaut: 8080)
+
+La [ collection postman ](https://github.com/jceintrey/chaotop-portal/blob/main/ressources/postman/rental.postman_collection.json) fourni les différents items pour tester les routes de l'api.
+
+Le frontal est disponible [ici](https://github.com/jceintrey/chaotop-portal/tree/main). Il suffit de modifier le /src/proxy.config.json pour faire pointer "/api/*" vers l'url de l'api.
 
 
 
@@ -251,7 +270,7 @@ Description : Permet la connexion d'un utilisateur.
 Réponse :
 200: Succès avec un token JWT.
 401: Erreur si l'email ou le mot de passe est incorrect.
-Validation : L'email doit être test@test.com et le mot de passe test!31.
+Validation : Les credentials doivent correspondre à un utilisateur valide.
 ```
 
 3. POST /messages
