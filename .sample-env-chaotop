@@ -1,0 +1,11 @@
+CHAOTOP_URL=jdbc:mysql://mysql:3306/chaotop
+CHAOTOP_USER=chaotop
+CHAOTOP_DBKEY=chaotopdbuserpassword
+
+
+CHAOTOP_JWTKEY=pleasedefine256bitskeyinenv
+
+CHAOTOP_CLOUDINARYKEY=thecloudinarykey
+CHAOTOP_CLOUDINARYSECRET=thecloudinarysecret
+
+

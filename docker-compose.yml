@@ -1,0 +1,35 @@
+services:
+  api:
+    container_name: chaotop-api
+    restart: unless-stopped
+    build: .
+    ports: 
+      - "8080:8080"
+    depends_on: 
+      - mysql
+    env_file:
+      - .env-chaotop
+
+  mysql:
+    image: mysql:8.0
+    container_name: chaotop-mysql
+    restart: unless-stopped
+    ports:
+      - "3309:3306"
+    env_file:
+      - .env-mysql
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  test:
+    image: debian
+    container_name: chaotop-test
+    stdin_open: true
+    tty: true
+    
+
+volumes:
+  mysql_data:
+
+networks:
+  chaotop_network:
