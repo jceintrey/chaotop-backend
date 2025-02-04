@@ -7,9 +7,10 @@ Sommaire
 1. [Description](#description)
 2. [Technologies](#technologies)
 3. [Installation](#installation)
-4. [Api endpoints](#api-endpoints)
-5. [Déploiement avec Docker](#déploiement-avec-docker)
-6. [Contribuer au projet](#contribuer-au-projet)
+4. [Accéder et utiliser l'API](#accéder-et-utiliser-lapi)
+5. [Api endpoints](#api-endpoints)
+6. [Déploiement avec Docker](#déploiement-avec-docker)
+7. [Contribuer au projet](#contribuer-au-projet)
 
 # Description
 
@@ -238,6 +239,14 @@ docker compose up -d
 docker compose ps
 docker compose logs -f --tail=10
 ```
+
+# Accéder et utiliser l'api
+L'api est disponible par défaut à l'adresse : http://localhost:8080
+  - le port peut être modifié via le setup de la variable CHAOTOP_SERVERPORT (par défaut: 8080)
+
+La [ collection postman ](https://github.com/jceintrey/chaotop-portal/blob/main/ressources/postman/rental.postman_collection.json) fourni les différents items pour tester les routes de l'api.
+
+Le frontal est disponible [ici](https://github.com/jceintrey/chaotop-portal/tree/main). Il suffit de modifier le /src/proxy.config.json pour faire pointer "/api/*" vers l'url de l'api.
 
 
 
