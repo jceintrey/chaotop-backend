@@ -3,12 +3,14 @@ services:
     container_name: chaotop-api
     restart: unless-stopped
     build: .
-    ports: 
+    ports:
       - "8080:8080"
-    depends_on: 
+    depends_on:
       - mysql
     env_file:
       - .env-chaotop
+    networks:
+      - chaotop_network
 
   mysql:
     image: mysql:8.0
@@ -20,13 +22,9 @@ services:
       - .env-mysql
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - chaotop_network
 
-  test:
-    image: debian
-    container_name: chaotop-test
-    stdin_open: true
-    tty: true
-    
 
 volumes:
   mysql_data:

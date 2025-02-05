@@ -1,5 +1,5 @@
-CHAOTOP_URL=jdbc:mysql://mysql:3306/chaotop
-CHAOTOP_USER=chaotop
+CHAOTOP_DBURL=jdbc:mysql://mysql:3306/chaotop
+CHAOTOP_DBUSER=chaotop
 CHAOTOP_DBKEY=chaotopdbuserpassword
 
 
