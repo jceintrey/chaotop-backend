@@ -10,6 +10,10 @@ import fr.jerem.chaotop_backend.dto.MessageRequest;
 import fr.jerem.chaotop_backend.dto.MessageResponse;
 
 import fr.jerem.chaotop_backend.service.MessageService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
  * </p>
  * 
  */
+@Tag(name = "MessageController", description = "Manage messages for rental purpose.")
 @RestController
 @RequestMapping("/api/messages")
 @Slf4j
@@ -45,6 +50,13 @@ public class MessageController {
      * @param {@link MessageRequest} the request DTO.
      * @return {@link MessageResponse} the response DTO.
      */
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Post a message", description = "This endpoint allows a user to send a message regarding a erntal.", responses = {
+            @ApiResponse(responseCode = "200", description = "Message sent successfully"),
+            @ApiResponse(responseCode = "400", description = "Bad request, an error occured"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+
+    })
     @PostMapping("")
     public ResponseEntity<MessageResponse> createMessage(@Valid @RequestBody MessageRequest messageRequest) {
         log.debug("@PostMapping(\"\") --> createMessage");

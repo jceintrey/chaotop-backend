@@ -1,5 +1,6 @@
 package fr.jerem.chaotop_backend.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -9,8 +10,10 @@ import lombok.Data;
  * Represents the response body returned after message creation.
  * </p>
  */
+@Schema(description = "Response body returned after message creation")
 @Data
 @AllArgsConstructor
 public class MessageResponse {
-private String message;
+    @Schema(description = "Information message returned", example = "Message send with success")
+    private String message;
 }

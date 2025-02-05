@@ -17,6 +17,10 @@ import fr.jerem.chaotop_backend.dto.RegisterRequest;
 import fr.jerem.chaotop_backend.dto.TokenResponse;
 import fr.jerem.chaotop_backend.service.AuthenticationService;
 import fr.jerem.chaotop_backend.service.UserManagementService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -33,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/auth")
 @Slf4j
+@Tag(name = "AuthController", description = "Process authentication and business operations on users")
 public class AuthController {
 
     private UserManagementService userManagementService;
@@ -57,6 +62,11 @@ public class AuthController {
      * @param {@link LoginRequest} the request DTO.
      * @return {@link TokenResponse} the response DTO.
      */
+
+    @Operation(summary = "Login to the API", description = "This endpoint allows a user to authenticate by providing credentials. It returns a JWT token.", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful authentication, returns a token"),
+            @ApiResponse(responseCode = "401", description = "Authentication failed, invalid credentials")
+    })
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
         log.debug("@PostMapping(\"/login\")");
@@ -80,6 +90,12 @@ public class AuthController {
      * @return {@link UserProfileResponse} the response DTO.
      * 
      */
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Get user informations", description = "This endpoint allows to retrieve user details by providing JWT token.", responses = {
+        @ApiResponse(responseCode = "200", description = "Successfully get the user details"),
+        @ApiResponse(responseCode = "401", description = "No authenticated user found."),
+        @ApiResponse(responseCode = "500", description = "Error fetching user details for email.")
+})
     @GetMapping("/me")
     public ResponseEntity<UserProfileResponse> getUserInformations() {
         log.debug("@GetMapping(\"/me\")");
@@ -124,6 +140,12 @@ public class AuthController {
      * @return {@link UserProfileResponse} the response DTO.
      * 
      */
+    @Operation(summary = "Register a new user", description = "This endpoint allows a user to register in application. It also authenticate and returns the JWT token.", responses = {
+        @ApiResponse(responseCode = "200", description = "Successful authentication, returns a token"),
+        @ApiResponse(responseCode = "409", description = "Conflict, the user already exist"),
+        @ApiResponse(responseCode = "500", description = "Internal server error"),
+        
+})
     @PostMapping("/register")
     public ResponseEntity<TokenResponse> register(@RequestBody RegisterRequest request) {
         log.debug("@PostMapping(\"/register\") - RegisterRequest: {}", request);
