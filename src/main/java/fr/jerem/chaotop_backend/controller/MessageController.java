@@ -54,8 +54,7 @@ public class MessageController {
     @Operation(summary = "Post a message", description = "This endpoint allows a user to send a message regarding a erntal.", responses = {
             @ApiResponse(responseCode = "200", description = "Message sent successfully"),
             @ApiResponse(responseCode = "400", description = "Bad request, an error occured"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @PostMapping("")
     public ResponseEntity<MessageResponse> createMessage(@Valid @RequestBody MessageRequest messageRequest) {

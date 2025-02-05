@@ -77,7 +77,8 @@ public class RentalContoller {
     @SecurityRequirement(name = "Bearer_Authentication")
     @Operation(summary = "Retrieve all rentals.", description = "This endpoint allows a user to retrieve all rentals.", responses = {
             @ApiResponse(responseCode = "200", description = "Successful, returns the list of rentals"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized")
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+
     })
     @GetMapping("")
     public ResponseEntity<RentalListResponse> getAllRentals() {
@@ -97,11 +98,11 @@ public class RentalContoller {
      */
     @SecurityRequirement(name = "Bearer_Authentication")
     @Operation(summary = "Retrieve a rental", description = "This endpoint allows a user to retrieve a rental by providing its ID.", responses = {
-        @ApiResponse(responseCode = "200", description = "Successful, returns the rental"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized"),
-        @ApiResponse(responseCode = "404", description = "Rental not found"),
-        
-})
+            @ApiResponse(responseCode = "200", description = "Successful, returns the rental"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404", description = "Rental not found"),
+
+    })
     @GetMapping("/{id}")
     public ResponseEntity<RentalResponse> getRentalById(@PathVariable("id") final Long id) {
         log.debug("@GetMapping(\"/{id}\")");
@@ -133,12 +134,12 @@ public class RentalContoller {
      */
     @SecurityRequirement(name = "Bearer_Authentication")
     @Operation(summary = "Creates a new rental", description = "This endpoint allows a user to create a new rental in the application.", responses = {
-        @ApiResponse(responseCode = "200", description = "Successful, rental successfully created"),
-        @ApiResponse(responseCode = "400", description = "Bad request"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized"),
-        @ApiResponse(responseCode = "500", description = "Internal server error"),
-        
-})
+            @ApiResponse(responseCode = "201", description = "Successful, rental successfully created"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "500", description = "Internal server error"),
+
+    })
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RentalCreateResponse> createRental(
             @RequestParam("name") String name,
@@ -193,10 +194,11 @@ public class RentalContoller {
      */
     @SecurityRequirement(name = "Bearer_Authentication")
     @Operation(summary = " Updates an existing rental", description = "This endpoint allows a user to update a rental.", responses = {
-        @ApiResponse(responseCode = "200", description = "Successful, rental successfully updated"),
-        @ApiResponse(responseCode = "404", description = "Not found")
-        
-})
+            @ApiResponse(responseCode = "200", description = "Successful, rental successfully updated"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404", description = "Not found")
+
+    })
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RentalResponse> updateRental(
             @PathVariable("id") final Long id,

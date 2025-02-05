@@ -65,7 +65,7 @@ public class AuthController {
 
     @Operation(summary = "Login to the API", description = "This endpoint allows a user to authenticate by providing credentials. It returns a JWT token.", responses = {
             @ApiResponse(responseCode = "200", description = "Successful authentication, returns a token"),
-            @ApiResponse(responseCode = "401", description = "Authentication failed, invalid credentials")
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
@@ -83,7 +83,8 @@ public class AuthController {
      * Get user informations.
      * 
      * <p>
-     * Use the {@link AuthenticationService} to retrieve the authenticated user informations.
+     * Use the {@link AuthenticationService} to retrieve the authenticated user
+     * informations.
      * 
      * </p>
      * 
@@ -93,7 +94,7 @@ public class AuthController {
     @SecurityRequirement(name = "Bearer_Authentication")
     @Operation(summary = "Get user informations", description = "This endpoint allows to retrieve user details by providing JWT token.", responses = {
             @ApiResponse(responseCode = "200", description = "Successfully get the user details"),
-            @ApiResponse(responseCode = "401", description = "No authenticated user found."),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "500", description = "Error fetching user details for email.")
     })
     @GetMapping("/me")
