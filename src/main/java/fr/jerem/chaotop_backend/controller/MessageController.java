@@ -50,7 +50,7 @@ public class MessageController {
      * @param {@link MessageRequest} the request DTO.
      * @return {@link MessageResponse} the response DTO.
      */
-    @SecurityRequirement(name = "Bearer Authentication")
+    @SecurityRequirement(name = "Bearer_Authentication")
     @Operation(summary = "Post a message", description = "This endpoint allows a user to send a message regarding a erntal.", responses = {
             @ApiResponse(responseCode = "200", description = "Message sent successfully"),
             @ApiResponse(responseCode = "400", description = "Bad request, an error occured"),

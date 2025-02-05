@@ -74,7 +74,7 @@ public class RentalContoller {
      * 
      * @return {@link RentalListResponse} the response DTO.
      */
-    @SecurityRequirement(name = "Bearer Authentication")
+    @SecurityRequirement(name = "Bearer_Authentication")
     @Operation(summary = "Retrieve all rentals.", description = "This endpoint allows a user to retrieve all rentals.", responses = {
             @ApiResponse(responseCode = "200", description = "Successful, returns the list of rentals"),
             @ApiResponse(responseCode = "401", description = "Unauthorized")
@@ -95,7 +95,7 @@ public class RentalContoller {
      * 
      * @return {@link RentalResponse} the response DTO.
      */
-    @SecurityRequirement(name = "Bearer Authentication")
+    @SecurityRequirement(name = "Bearer_Authentication")
     @Operation(summary = "Retrieve a rental", description = "This endpoint allows a user to retrieve a rental by providing its ID.", responses = {
         @ApiResponse(responseCode = "200", description = "Successful, returns the rental"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
@@ -131,7 +131,7 @@ public class RentalContoller {
      * @return {@link ResponseEntity} containing the creation status and rental ID
      *         if successful.
      */
-    @SecurityRequirement(name = "Bearer Authentication")
+    @SecurityRequirement(name = "Bearer_Authentication")
     @Operation(summary = "Creates a new rental", description = "This endpoint allows a user to create a new rental in the application.", responses = {
         @ApiResponse(responseCode = "200", description = "Successful, rental successfully created"),
         @ApiResponse(responseCode = "400", description = "Bad request"),
@@ -191,7 +191,7 @@ public class RentalContoller {
      * @param description The updated description of the rental.
      * @return {@link RentalResponse} the update rental.
      */
-    @SecurityRequirement(name = "Bearer Authentication")
+    @SecurityRequirement(name = "Bearer_Authentication")
     @Operation(summary = " Updates an existing rental", description = "This endpoint allows a user to update a rental.", responses = {
         @ApiResponse(responseCode = "200", description = "Successful, rental successfully updated"),
         @ApiResponse(responseCode = "404", description = "Not found")
