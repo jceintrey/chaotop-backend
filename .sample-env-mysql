@@ -1,4 +1,16 @@
+# Rename this file to .env-mysql before using it
+# This file contains environment variables required for the MySQL database.
+
+# Root password for MySQL (⚠️ Change this to a strong password!)
 MYSQL_ROOT_PASSWORD=pleasechooseastrongpassword
-MYSQL_DATABASE=chaotop
-MYSQL_USER=chaotop
-MYSQL_PASSWORD=chaotopdbuserpassword
+
+# Database name
+MYSQL_DATABASE=chaotop  # The name of the database that will be created
+
+# Database user credentials
+MYSQL_USER=chaotop                                  # MySQL username  
+MYSQL_PASSWORD=chaotopdbuserpassword                # MySQL user password (⚠️ Must be changed!)
+
+# ⚠️ IMPORTANT:  
+# - Ensure that MYSQL_PASSWORD matches the value of CHAOTOP_DBKEY in the .env-chaotop file.
+# - Use a strong and secure password to protect the database.

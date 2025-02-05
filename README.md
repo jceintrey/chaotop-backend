@@ -204,6 +204,7 @@ Deux options possibles:
 - un fichier Dockerfile complet permettant de faire le build à partir des sources du projet
 
 ### Option 1 : Simple Dockerfile avec COPY du jar de l'application
+
 Si vous avez déjà construit l'artefact de l'application et que vous souhaitez l'utiliser, remplacer le contenu du fichier Dockerfile par :
 
 ```bash
@@ -234,6 +235,21 @@ docker compose ps
 docker compose logs -f --tail=10
 ```
 
+## Reinitialisation ou mise à jour de la stack compose
+
+⚠️ En cas de changement de mots de passe de la base Mysql ou autre changement type mise à jour des sources.
+
+- Supprimer les volumes
+
+```bash
+docker compose down -v
+```
+
+- Supprimer les images de l'application
+
+```bash
+docker image rm <imageID>
+```
 
 # Accéder et utiliser l'api
 
