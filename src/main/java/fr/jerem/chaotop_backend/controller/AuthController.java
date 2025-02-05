@@ -90,7 +90,7 @@ public class AuthController {
      * @return {@link UserProfileResponse} the response DTO.
      * 
      */
-    @SecurityRequirement(name = "Bearer Authentication")
+    @SecurityRequirement(name = "Bearer_Authentication")
     @Operation(summary = "Get user informations", description = "This endpoint allows to retrieve user details by providing JWT token.", responses = {
         @ApiResponse(responseCode = "200", description = "Successfully get the user details"),
         @ApiResponse(responseCode = "401", description = "No authenticated user found."),
