@@ -45,7 +45,9 @@ public class SpringSecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/api/auth/login",
             "/api/auth/register",
-            "/register"
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
+
     };
 
     public SpringSecurityConfig(
