@@ -59,6 +59,9 @@ public class UserController {
     @Operation(summary = "Get user informations", description = "This endpoint allows to retrieve user details by their Id.", responses = {
             @ApiResponse(responseCode = "200", description = "Successfully get the user details"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+            
     })
 
     @GetMapping("/{id}")
@@ -71,7 +74,7 @@ public class UserController {
             if (optionalUserProfileResponse.isPresent()) {
                 return ResponseEntity.ok(optionalUserProfileResponse.get());
             } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new UserProfileResponse(null, "", "", "", ""));
             }
 
