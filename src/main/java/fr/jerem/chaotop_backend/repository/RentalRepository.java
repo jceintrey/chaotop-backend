@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import fr.jerem.chaotop_backend.model.RentalEntity;
 import java.util.Optional;
-import java.util.List;
+
 
 
 /**
