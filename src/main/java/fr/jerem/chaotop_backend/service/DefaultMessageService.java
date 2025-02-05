@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Default implementation of {@link MessageService}.
  * <p>
- * This service handles the creation of messages by validating the existence of  
+ * This service handles the creation of messages by validating the existence of
  * both the user and the rental before persisting the message to the database.
  * </p>
  */
@@ -42,7 +42,7 @@ public class DefaultMessageService implements MessageService {
             throws UsernameNotFoundException, IllegalArgumentException {
         // get user if exist
         log.debug("Try to create a new message");
-        Optional<DataBaseEntityUser> optionalEntityUser = userManagementService.getUserById(userId);
+        Optional<DataBaseEntityUser> optionalEntityUser = userManagementService.getUserEntityById(userId);
         DataBaseEntityUser user = optionalEntityUser
                 .orElseThrow(() -> new UsernameNotFoundException("User with userId " + userId + " not found"));
 

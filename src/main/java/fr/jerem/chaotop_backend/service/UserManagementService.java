@@ -41,6 +41,16 @@ public interface UserManagementService {
     public Optional<UserDetails> getUserbyEmail(String email);
 
     /**
+     * Retrieves a {@link UserDetails} object by id.
+     * This object should be cast to its implementation.
+     * 
+     * @param {@link Long} the userId.
+     * @return an {@link Optional} containing the {@link UserDetails} if found,
+     *         otherwise empty.
+     */
+    public Optional<UserProfileResponse> getUserProfilebyId(Long userId);
+
+    /**
      * Retrieves the user uniq identifier by email.
      * 
      * @param {@link String} the email.
@@ -58,7 +68,7 @@ public interface UserManagementService {
      * @return an {@link Optional} containing the {@link UserDetails} if found,
      *         otherwise empty.
      */
-    public UserProfileResponse getUserInformationResponse(String email);
+    public UserProfileResponse getUserProfile(String email);
 
     /**
      * Return true if the user is already present in the Database.
@@ -80,6 +90,6 @@ public interface UserManagementService {
      *         found,
      *         otherwise empty.
      */
-    public Optional<DataBaseEntityUser> getUserById(Long userId);
+    public Optional<DataBaseEntityUser> getUserEntityById(Long userId);
 
 }
