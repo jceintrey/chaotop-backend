@@ -37,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/auth")
 @Slf4j
-@Tag(name = "AuthController", description = "Process authentication and business operations on users")
+@Tag(name = "AuthController", description = "Process authentication related operations")
 public class AuthController {
 
     private UserManagementService userManagementService;
@@ -83,7 +83,7 @@ public class AuthController {
      * Get user informations.
      * 
      * <p>
-     * Use the {@link AuthenticationService} to retrieve the authenticated user.
+     * Use the {@link AuthenticationService} to retrieve the authenticated user informations.
      * 
      * </p>
      * 
@@ -92,10 +92,10 @@ public class AuthController {
      */
     @SecurityRequirement(name = "Bearer_Authentication")
     @Operation(summary = "Get user informations", description = "This endpoint allows to retrieve user details by providing JWT token.", responses = {
-        @ApiResponse(responseCode = "200", description = "Successfully get the user details"),
-        @ApiResponse(responseCode = "401", description = "No authenticated user found."),
-        @ApiResponse(responseCode = "500", description = "Error fetching user details for email.")
-})
+            @ApiResponse(responseCode = "200", description = "Successfully get the user details"),
+            @ApiResponse(responseCode = "401", description = "No authenticated user found."),
+            @ApiResponse(responseCode = "500", description = "Error fetching user details for email.")
+    })
     @GetMapping("/me")
     public ResponseEntity<UserProfileResponse> getUserInformations() {
         log.debug("@GetMapping(\"/me\")");
@@ -110,7 +110,7 @@ public class AuthController {
 
         String email = optionalAuthenticatedUserEmail.get();
         try {
-            UserProfileResponse meResponse = userManagementService.getUserInformationResponse(email);
+            UserProfileResponse meResponse = userManagementService.getUserProfile(email);
 
             if (meResponse.getEmail().isEmpty()) {
                 log.error("Error fetching user details for email: {}", email);
@@ -141,11 +141,11 @@ public class AuthController {
      * 
      */
     @Operation(summary = "Register a new user", description = "This endpoint allows a user to register in application. It also authenticate and returns the JWT token.", responses = {
-        @ApiResponse(responseCode = "200", description = "Successful authentication, returns a token"),
-        @ApiResponse(responseCode = "409", description = "Conflict, the user already exist"),
-        @ApiResponse(responseCode = "500", description = "Internal server error"),
-        
-})
+            @ApiResponse(responseCode = "200", description = "Successful authentication, returns a token"),
+            @ApiResponse(responseCode = "409", description = "Conflict, the user already exist"),
+            @ApiResponse(responseCode = "500", description = "Internal server error"),
+
+    })
     @PostMapping("/register")
     public ResponseEntity<TokenResponse> register(@RequestBody RegisterRequest request) {
         log.debug("@PostMapping(\"/register\") - RegisterRequest: {}", request);

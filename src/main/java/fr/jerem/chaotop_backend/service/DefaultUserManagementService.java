@@ -14,11 +14,14 @@ import fr.jerem.chaotop_backend.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Implementation of {@link UserManagementService} responsible for handling user-related operations.
+ * Implementation of {@link UserManagementService} responsible for handling
+ * user-related operations.
  * <p>
- * This service provides functionalities for user creation, retrieval, and validation.
+ * This service provides functionalities for user creation, retrieval, and
+ * validation.
  * It interacts with the {@link UserRepository} to persist and fetch user data.
- * It uses the {@link PasswordEncoder} to hash the password before storing in the database.
+ * It uses the {@link PasswordEncoder} to hash the password before storing in
+ * the database.
  * </p>
  */
 @Service
@@ -29,7 +32,8 @@ public class DefaultUserManagementService implements UserManagementService {
     private final PasswordEncoder passwordEncoder;
 
     /**
-     * Constructs a {@code DefaultUserManagementService} with the necessary dependencies.
+     * Constructs a {@code DefaultUserManagementService} with the necessary
+     * dependencies.
      *
      * @param userRepository  the repository handling user persistence
      * @param passwordEncoder the encoder for hashing user passwords
@@ -39,7 +43,7 @@ public class DefaultUserManagementService implements UserManagementService {
         this.passwordEncoder = passwordEncoder;
     }
 
-      /**
+    /**
      * Creates a new user with the given credentials.
      * <p>
      * The password is hashed before being stored in the database.
@@ -85,7 +89,7 @@ public class DefaultUserManagementService implements UserManagementService {
      * 
      */
     @Override
-    public UserProfileResponse getUserInformationResponse(String email) {
+    public UserProfileResponse getUserProfile(String email) {
         Optional<UserDetails> userDetailsOptional = getUserbyEmail(email);
 
         // if user is present
@@ -113,7 +117,7 @@ public class DefaultUserManagementService implements UserManagementService {
     }
 
     @Override
-    public Optional<DataBaseEntityUser> getUserById(Long userId) {
+    public Optional<DataBaseEntityUser> getUserEntityById(Long userId) {
 
         try {
             Integer userIdInteger = Math.toIntExact(userId);
@@ -121,6 +125,18 @@ public class DefaultUserManagementService implements UserManagementService {
         } catch (ArithmeticException e) {
             throw new IllegalArgumentException("userId is out of bounds for Integer: " + userId, e);
         }
+    }
+
+    @Override
+    public Optional<UserProfileResponse> getUserProfilebyId(Long userId) {
+
+        Optional<DataBaseEntityUser> userEntityOptional = getUserEntityById(userId);
+        if (userEntityOptional.isPresent()) {
+            String email = userEntityOptional.get().getEmail();
+            return Optional.ofNullable(getUserProfile(email));
+
+        } else
+            return Optional.empty();
     }
 
 }

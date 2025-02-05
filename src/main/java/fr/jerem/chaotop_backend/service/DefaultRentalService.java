@@ -129,7 +129,7 @@ public class DefaultRentalService implements RentalService {
         if (userId == null)
             throw new IllegalArgumentException("Invalid userId");
 
-        DataBaseEntityUser datatBaseEntityUser = userManagementService.getUserById(userId)
+        DataBaseEntityUser datatBaseEntityUser = userManagementService.getUserEntityById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
 
         try {
