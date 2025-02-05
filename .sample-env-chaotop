@@ -1,11 +1,17 @@
-CHAOTOP_DBURL=jdbc:mysql://mysql:3306/chaotop
-CHAOTOP_DBUSER=chaotop
-CHAOTOP_DBKEY=chaotopdbuserpassword
+# Rename this file to .env-chaotop before using it
+# This file contains environment variables required for the Chaotop application.
 
+# Database connection details
+CHAOTOP_DBURL=jdbc:mysql://mysql:3306/chaotop  # MySQL database URL
+CHAOTOP_DBUSER=chaotop                         # MySQL database username
+CHAOTOP_DBKEY=chaotopdbuserpassword            # MySQL database password (⚠️ Change this before deployment!)
 
-CHAOTOP_JWTKEY=pleasedefine256bitskeyinenv
+# JWT Secret Key for authentication (⚠️ Must be changed for security reasons!)
+CHAOTOP_JWTKEY=efc44b1e645e6876f4db3d4b8a6c2890c75d96582ddca6c646c2cc8e2c4f0656
 
-CHAOTOP_CLOUDINARYKEY=thecloudinarykey
-CHAOTOP_CLOUDINARYSECRET=thecloudinarysecret
+# To generate a new secure JWT key, use the following command:
+# openssl rand 32 | xxd -p
 
-
+# Cloudinary API credentials (used for images storage)
+CHAOTOP_CLOUDINARYKEY=thecloudinarykey          # Cloudinary API key
+CHAOTOP_CLOUDINARYSECRET=thecloudinarysecret    # Cloudinary API secret
