@@ -1,8 +1,6 @@
 package fr.jerem.chaotop_backend.controller;
 
-import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,28 +59,14 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
-            
+
     })
 
     @GetMapping("/{id}")
     public ResponseEntity<UserProfileResponse> getUserById(@PathVariable("id") final Long id) {
-        log.debug("getUserById");
+        UserProfileResponse userProfileResponse = userManagementService.getUserProfilebyId(id);
+        return ResponseEntity.ok(userProfileResponse);
 
-        try {
-            Optional<UserProfileResponse> optionalUserProfileResponse = userManagementService.getUserProfilebyId(id);
-
-            if (optionalUserProfileResponse.isPresent()) {
-                return ResponseEntity.ok(optionalUserProfileResponse.get());
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new UserProfileResponse(null, "", "", "", ""));
-            }
-
-        } catch (Exception e) {
-            log.error("Unexpected error: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new UserProfileResponse(null, "", "", "", ""));
-        }
     }
 
 }

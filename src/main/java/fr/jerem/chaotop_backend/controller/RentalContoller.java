@@ -21,9 +21,6 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 
-import java.util.Optional;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
@@ -52,14 +49,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class RentalContoller {
     private final RentalService rentalService;
     private final AuthenticationService authenticationService;
-    private final UserManagementService userManagementService;
 
     public RentalContoller(
             RentalService rentalService,
-            UserManagementService userManagementService,
             AuthenticationService authenticationService) {
         this.rentalService = rentalService;
-        this.userManagementService = userManagementService;
         this.authenticationService = authenticationService;
 
         log.debug("RentalContoller initialized.");
@@ -107,11 +101,9 @@ public class RentalContoller {
     public ResponseEntity<RentalResponse> getRentalById(@PathVariable("id") final Long id) {
         log.debug("@GetMapping(\"/{id}\")");
 
-        Optional<RentalResponse> rentalResponse = rentalService.getRentalById(id);
+        RentalResponse rentalResponse = rentalService.getRentalById(id);
+        return ResponseEntity.ok().body(rentalResponse);
 
-        return rentalResponse
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     /**
@@ -148,38 +140,14 @@ public class RentalContoller {
             @RequestParam(value = "picture", required = false) MultipartFile picture,
             @RequestParam(value = "description", required = false) String description) {
 
-        log.debug("@PostMapping(\"\")");
-
         // Retrieve the authenticated user email
-        Optional<String> optionalAuthenticatedUserEmail = authenticationService.getAuthenticatedUserEmail();
-        if (optionalAuthenticatedUserEmail.isEmpty()) {
-            log.error("No authenticated user found.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        // Get the id corresponding to the user email
-        String email = optionalAuthenticatedUserEmail.get();
-        Optional<Long> optionalUserId = userManagementService.getUserId(email);
-        if (optionalUserId.isEmpty()) {
-            log.error("No Id found for email {}", email);
-            return ResponseEntity.internalServerError().build();
-        }
+        String email = authenticationService.getAuthenticatedUserEmail();
 
-        Long userId = optionalUserId.get();
-        try {
+        Integer rentalId = rentalService.createRental(name, surface, price, picture, description, email);
 
-            Optional<Integer> OptionalrentalId = rentalService.createRental(name, surface, price, picture, description,
-                    userId);
+        URI location = URI.create("/api/rentals/" + rentalId);
+        return ResponseEntity.created(location).body(new RentalCreateResponse("Rental created!"));
 
-            if (OptionalrentalId.isEmpty())
-                return ResponseEntity.internalServerError().body(new RentalCreateResponse("Error"));
-
-            Integer rentalId = OptionalrentalId.get();
-            URI location = URI.create("/api/rentals/" + rentalId);
-            return ResponseEntity.created(location).body(new RentalCreateResponse("Rental created!"));
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RentalCreateResponse("Error"));
-        }
     }
 
     /**
@@ -206,11 +174,11 @@ public class RentalContoller {
             @RequestParam("surface") double surface,
             @RequestParam("price") BigDecimal price,
             @RequestParam(value = "description", required = false) String description) {
-        log.debug("@PutMapping(\"/{id}\")");
 
-        return rentalService.updateRental(id, name, price, surface, description)
-                .map((r) -> ResponseEntity.ok(r))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        log.debug("@PutMapping(\"/{id}\")");
+        RentalResponse updatedRental = rentalService.updateRental(id, name, price, surface, description);
+        return ResponseEntity.ok().body(updatedRental);
+
     }
 
 }

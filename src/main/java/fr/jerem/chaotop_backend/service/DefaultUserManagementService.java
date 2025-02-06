@@ -8,6 +8,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import fr.jerem.chaotop_backend.dto.UserProfileResponse;
+import fr.jerem.chaotop_backend.exception.EmailAlreadyUsedException;
+import fr.jerem.chaotop_backend.exception.InvalidUserDetailsException;
+import fr.jerem.chaotop_backend.exception.InvalidUserProfileException;
+import fr.jerem.chaotop_backend.exception.UserNotFoundException;
 import fr.jerem.chaotop_backend.model.AppUserDetails;
 import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
 import fr.jerem.chaotop_backend.repository.UserRepository;
@@ -57,6 +61,11 @@ public class DefaultUserManagementService implements UserManagementService {
     @Override
     public AppUserDetails createUser(String email, String plainPassword, String name) {
 
+        if (isEmailAlreadyUsed(email)) {
+            throw new EmailAlreadyUsedException("Email '" + email + "' is already present in database.",
+                    "DefaultUserManagementService.createUser");
+        }
+
         DataBaseEntityUser user = new DataBaseEntityUser();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(plainPassword));
@@ -69,14 +78,16 @@ public class DefaultUserManagementService implements UserManagementService {
     }
 
     @Override
-    public Optional<UserDetails> getUserbyEmail(String email) {
-        return Optional.ofNullable(new AppUserDetails(this.userRepository.findByEmail(email)));
+    public UserDetails getUserbyEmail(String email) {
+        return this.userRepository.findByEmail(email).map((user) -> new AppUserDetails(user))
+                .orElseThrow(() -> new UserNotFoundException("User with " + email + " not found",
+                        "DefaultUserManagementService.getUserbyEmail"));
     }
 
     @Override
     public Optional<Long> getUserId(String email) {
-        return Optional.ofNullable(this.userRepository.findByEmail(email))
-                .map(user -> Long.valueOf(user.getId().longValue()));
+        return this.userRepository.findByEmail(email)
+                .map(user -> user.getId().longValue());
     }
 
     /**
@@ -90,22 +101,20 @@ public class DefaultUserManagementService implements UserManagementService {
      */
     @Override
     public UserProfileResponse getUserProfile(String email) {
-        Optional<UserDetails> userDetailsOptional = getUserbyEmail(email);
+        UserDetails userDetails = getUserbyEmail(email);
 
-        // if user is present
-        return userDetailsOptional.map(userDetails -> {
-            // Cast to AppUserDetails to get detail user fields
-            AppUserDetails appUserDetails = (AppUserDetails) userDetails;
-            return new UserProfileResponse(
-                    appUserDetails.getId(),
-                    appUserDetails.getName(),
-                    appUserDetails.getEmail(),
-                    appUserDetails.getCreatedAt().toString(),
-                    appUserDetails.getUpdatedAt().toString());
-        }).orElseGet(() -> {
-            // return empty UserProfileResponse if user not found
-            return new UserProfileResponse(null, "", "", "", "");
-        });
+        if (!(userDetails instanceof AppUserDetails)) {
+            throw new InvalidUserDetailsException("UserDetails is not of the expected type",
+                    "DefaultUserManagementService.getUserProfile");
+        }
+        AppUserDetails appUserDetails = (AppUserDetails) userDetails;
+
+        return new UserProfileResponse(
+                appUserDetails.getId(),
+                appUserDetails.getName(),
+                appUserDetails.getEmail(),
+                appUserDetails.getCreatedAt().toString(),
+                appUserDetails.getUpdatedAt().toString());
     }
 
     @Override
@@ -118,25 +127,34 @@ public class DefaultUserManagementService implements UserManagementService {
 
     @Override
     public Optional<DataBaseEntityUser> getUserEntityById(Long userId) {
+        return userRepository.findById(userId.intValue());
 
-        try {
-            Integer userIdInteger = Math.toIntExact(userId);
-            return userRepository.findById(userIdInteger);
-        } catch (ArithmeticException e) {
-            throw new IllegalArgumentException("userId is out of bounds for Integer: " + userId, e);
-        }
     }
 
     @Override
-    public Optional<UserProfileResponse> getUserProfilebyId(Long userId) {
+    public Optional<DataBaseEntityUser> getUserEntityByMail(String email) {
+        return userRepository.findByEmail(email);
 
-        Optional<DataBaseEntityUser> userEntityOptional = getUserEntityById(userId);
-        if (userEntityOptional.isPresent()) {
-            String email = userEntityOptional.get().getEmail();
-            return Optional.ofNullable(getUserProfile(email));
+    }
 
-        } else
-            return Optional.empty();
+    @Override
+    public UserProfileResponse getUserProfilebyId(Long userId) {
+
+        Optional<DataBaseEntityUser> optionalUserEntity = getUserEntityById(userId);
+
+        // check if empty
+        if (optionalUserEntity.isEmpty())
+            throw new UserNotFoundException("User with id " + userId + "not found",
+                    "DefaultUserManagementService.getUserEntityByMail");
+
+        DataBaseEntityUser user = optionalUserEntity.get();
+        // check if email field is set
+        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+            throw new InvalidUserProfileException("User with ID " + userId + " has an invalid email.",
+                    "DefaultUserManagementService.getUserProfilebyId");
+        }
+
+        return getUserProfile(user.getEmail());
     }
 
 }

@@ -59,18 +59,13 @@ public class MessageController {
     @PostMapping("")
     public ResponseEntity<MessageResponse> createMessage(@Valid @RequestBody MessageRequest messageRequest) {
         log.debug("@PostMapping(\"\") --> createMessage");
-        log.trace(messageRequest.toString());
-        try {
-            log.trace("messageRequest.getId(): " + messageRequest.getUserId());
-            log.trace("messageRequest.getRentalId() " + messageRequest.getRentalId());
-            log.trace(" messageRequest.getMessage() " + messageRequest.getMessage());
-            MessageResponse messageResponse = messageService.createMessage(messageRequest.getUserId(),
-                    messageRequest.getRentalId(),
-                    messageRequest.getMessage());
-            return ResponseEntity.ok(messageResponse);
 
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse("{}"));
-        }
+        MessageResponse messageResponse = messageService.createMessage(
+                messageRequest.getUserId(),
+                messageRequest.getRentalId(),
+                messageRequest.getMessage());
+
+        return ResponseEntity.ok(messageResponse);
+
     }
 }

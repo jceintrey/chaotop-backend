@@ -28,7 +28,7 @@ public interface UserManagementService {
      * @param name          the name of the new user.
      * @return a UserDetails object that represents the created user.
      */
-    public UserDetails createUser(String email, String plainPassword, String name) throws Exception;
+    public UserDetails createUser(String email, String plainPassword, String name);
 
     /**
      * Retrieves a {@link UserDetails} object by email.
@@ -38,7 +38,7 @@ public interface UserManagementService {
      * @return an {@link Optional} containing the {@link UserDetails} if found,
      *         otherwise empty.
      */
-    public Optional<UserDetails> getUserbyEmail(String email);
+    public UserDetails getUserbyEmail(String email);
 
     /**
      * Retrieves a {@link UserDetails} object by id.
@@ -48,7 +48,7 @@ public interface UserManagementService {
      * @return an {@link Optional} containing the {@link UserDetails} if found,
      *         otherwise empty.
      */
-    public Optional<UserProfileResponse> getUserProfilebyId(Long userId);
+    public UserProfileResponse getUserProfilebyId(Long userId);
 
     /**
      * Retrieves the user uniq identifier by email.
@@ -85,11 +85,23 @@ public interface UserManagementService {
      * This method is intented to be used by other services and not
      * by controllers themselves in order to respect the layer model.
      * 
-     * @param {@link String} email of the user
+     * @param {@link Long} id of the user
      * @return an {@link Optional} containing the {@link DataBaseEntityUser} if
      *         found,
      *         otherwise empty.
      */
     public Optional<DataBaseEntityUser> getUserEntityById(Long userId);
 
+    /**
+     * Retrieves the {@link DataBaseEntityUser} by their Email.
+     * 
+     * This method is intented to be used by other services and not
+     * by controllers themselves in order to respect the layer model.
+     * 
+     * @param {@link String} email of the user
+     * @return an {@link Optional} containing the {@link DataBaseEntityUser} if
+     *         found,
+     *         otherwise empty.
+     */
+    public Optional<DataBaseEntityUser> getUserEntityByMail(String email);
 }

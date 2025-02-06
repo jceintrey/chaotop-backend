@@ -1,6 +1,5 @@
 package fr.jerem.chaotop_backend.service;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -8,12 +7,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.jerem.chaotop_backend.configuration.AppConfig;
 import fr.jerem.chaotop_backend.dto.RentalResponse;
+import fr.jerem.chaotop_backend.exception.RentalNotFoundException;
+import fr.jerem.chaotop_backend.exception.UserNotFoundException;
 import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
 import fr.jerem.chaotop_backend.model.RentalEntity;
 import fr.jerem.chaotop_backend.repository.RentalRepository;
@@ -100,13 +100,15 @@ public class DefaultRentalService implements RentalService {
      * @throws IllegalArgumentException if the provided ID is {@code null}
      */
     @Override
-    public Optional<RentalResponse> getRentalById(Long id) {
+    public RentalResponse getRentalById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
+        RentalEntity rentalEntity = rentalRepository.findById(id)
+                .orElseThrow(() -> new RentalNotFoundException("Rental with id " + id + " not found",
+                        "DefaultRentalService.getRentalById"));
 
-        return rentalRepository.findById(id)
-                .map(rentalEntity -> modelMapper.map(rentalEntity, RentalResponse.class));
+        return modelMapper.map(rentalEntity, RentalResponse.class);
     }
 
     /**
@@ -124,68 +126,56 @@ public class DefaultRentalService implements RentalService {
     }
 
     @Override
-    public Optional<Integer> createRental(String name, double surface, BigDecimal price, MultipartFile picture,
-            String description, Long userId) {
-        if (userId == null)
-            throw new IllegalArgumentException("Invalid userId");
+    public Integer createRental(String name, double surface, BigDecimal price, MultipartFile picture,
+            String description, String usermail) {
 
-        DataBaseEntityUser datatBaseEntityUser = userManagementService.getUserEntityById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+        Optional<DataBaseEntityUser> optionalDataBaseEntityUser = userManagementService.getUserEntityByMail(usermail);
+        if (optionalDataBaseEntityUser.isEmpty())
+            throw new UserNotFoundException("User with id " + usermail + "not found",
+                    "DefaultRentalService.createRental");
 
-        try {
-            String pictureUrl = storageService.uploadImage(picture);
+        DataBaseEntityUser datatBaseEntityUser = optionalDataBaseEntityUser.get();
 
-            log.debug("pictureurl: " + pictureUrl);
-            RentalEntity rentalEntity = new RentalEntity();
-            rentalEntity.setName(name);
-            rentalEntity.setSurface(surface);
-            rentalEntity.setPrice(price);
-            rentalEntity.setPicture(pictureUrl);
-            rentalEntity.setDescription(description);
-            rentalEntity.setOwner(datatBaseEntityUser);
-            rentalEntity.setCreatedAt(LocalDateTime.now());
-            rentalEntity.setUpdatedAt(LocalDateTime.now());
+        String pictureUrl = storageService.uploadImage(picture);
 
-            RentalEntity savedRentalEntity = rentalRepository.save(rentalEntity);
+        RentalEntity rentalEntity = new RentalEntity();
+        rentalEntity.setName(name);
+        rentalEntity.setSurface(surface);
+        rentalEntity.setPrice(price);
+        rentalEntity.setPicture(pictureUrl);
+        rentalEntity.setDescription(description);
+        rentalEntity.setOwner(datatBaseEntityUser);
+        rentalEntity.setCreatedAt(LocalDateTime.now());
+        rentalEntity.setUpdatedAt(LocalDateTime.now());
 
-            return Optional.of(savedRentalEntity.getId());
-        } catch (IOException ioException) {
-            log.error("Fail to upload the picture.", ioException);
-            return Optional.empty();
-        } catch (Exception e) {
-            log.error("An error has occured.", e);
-            return Optional.empty();
+        RentalEntity savedRentalEntity = rentalRepository.save(rentalEntity);
 
-        }
+        return savedRentalEntity.getId();
 
     }
 
     @Override
-    public Optional<RentalResponse> updateRental(Long id, String name, BigDecimal price, double surface,
-            String description) {
-        Optional<RentalEntity> optionalRentalEntity = rentalRepository.findById(id);
+    public RentalResponse updateRental(Long id, String name, BigDecimal price, double surface, String description) {
 
-        if (optionalRentalEntity.isPresent()) {
-            RentalEntity rentalEntity = optionalRentalEntity.get();
+        RentalEntity rentalEntity = rentalRepository.findById(id)
+                .orElseThrow(() -> new RentalNotFoundException("Rental with ID: " + id + "not found",
+                        "DefaultRentalService.updateRental"));
 
-            if (name != null)
-                rentalEntity.setName(name);
-            if (price != null)
-                rentalEntity.setPrice(price);
-            if (surface > 0)
-                rentalEntity.setSurface(surface);
+        if (name != null)
+            rentalEntity.setName(name);
+        if (price != null)
+            rentalEntity.setPrice(price);
+        if (surface > 0)
+            rentalEntity.setSurface(surface);
 
-            if (description != null)
-                rentalEntity.setDescription(description);
+        if (description != null)
+            rentalEntity.setDescription(description);
 
-            rentalEntity.setUpdatedAt(LocalDateTime.now());
+        rentalEntity.setUpdatedAt(LocalDateTime.now());
 
-            RentalEntity updatedRental = rentalRepository.save(rentalEntity);
+        RentalEntity updatedRental = rentalRepository.save(rentalEntity);
 
-            return Optional.of(modelMapper.map(updatedRental, RentalResponse.class));
-        }
-
-        return Optional.empty();
+        return modelMapper.map(updatedRental, RentalResponse.class);
 
     }
 

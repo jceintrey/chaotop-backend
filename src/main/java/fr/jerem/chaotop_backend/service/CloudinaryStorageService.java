@@ -1,6 +1,5 @@
 package fr.jerem.chaotop_backend.service;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -8,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 
+import fr.jerem.chaotop_backend.exception.ImageUploadException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -35,10 +35,18 @@ public class CloudinaryStorageService implements StorageService {
                 "api_secret", apiSecret));
     }
 
-    public String uploadImage(MultipartFile file) throws IOException {
+    public String uploadImage(MultipartFile file) throws ImageUploadException {
         log.debug("Cloudinary upload image...");
-        @SuppressWarnings("unchecked")
-        Map<String, Object> uploadResult = (Map<String, Object>)cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
-        return uploadResult.get("secure_url").toString();
+        try {
+            if (!file.isEmpty()) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> uploadResult = (Map<String, Object>) cloudinary.uploader().upload(file.getBytes(),
+                        ObjectUtils.emptyMap());
+                return uploadResult.get("secure_url").toString();
+            } else
+                return null;
+        } catch (Exception e) {
+            throw new ImageUploadException("Failed to upload image to Cloudinary", e);
+        }
     }
 }
