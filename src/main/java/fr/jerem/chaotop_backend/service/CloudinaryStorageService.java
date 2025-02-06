@@ -2,6 +2,8 @@ package fr.jerem.chaotop_backend.service;
 
 import java.util.Map;
 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
@@ -11,7 +13,8 @@ import fr.jerem.chaotop_backend.exception.ImageUploadException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * StorageService class for storing images of the application.
+ * StorageService class for storing images of the application in the Cloudinary
+ * storage cloud.
  * 
  * <p>
  * This class provides functionality for uploading an image
@@ -35,6 +38,13 @@ public class CloudinaryStorageService implements StorageService {
                 "api_secret", apiSecret));
     }
 
+    /**
+     * Upload a {@link MultipartFile} file to Cloudinary.
+     * 
+     * @param MultipartFile the file to be uploaded
+     * @return a {@code String} url of the uploaded image
+     * @throws ImageUploadException if an error occured during upload
+     */
     public String uploadImage(MultipartFile file) throws ImageUploadException {
         log.debug("Cloudinary upload image...");
         try {

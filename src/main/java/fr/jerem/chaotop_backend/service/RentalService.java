@@ -34,8 +34,7 @@ public interface RentalService {
        * of the rental.
        * 
        * @param id the unique identifier of the rental.
-       * @return an {@link Optional} containing the {@link RentalResponse} if found,
-       *         otherwise empty.
+       * @return the {@link RentalResponse}
        */
       RentalResponse getRentalById(Long id);
 
@@ -79,10 +78,8 @@ public interface RentalService {
        * @param price       the new price of the rental if not null.
        * @param surface     the new surface of the rental if > 0.
        * @param description the new description if not null.
-       * @return a {@link Optional} containing the {@link RentalResponse} wrapped from
-       *         the new {@link RentalEntity} or null if not present.
+       * @return the {@link RentalResponse}
        */
-      RentalResponse updateRental(Long id, String name, BigDecimal price, double surface,
-                  String description);
+      RentalResponse updateRental(Long id, String name, BigDecimal price, double surface, String description);
 
 }

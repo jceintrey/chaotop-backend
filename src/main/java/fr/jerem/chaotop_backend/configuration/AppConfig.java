@@ -18,9 +18,21 @@ import fr.jerem.chaotop_backend.service.CloudinaryStorageService;
 import fr.jerem.chaotop_backend.service.DefaultUserManagementService;
 import fr.jerem.chaotop_backend.service.HmacJwtFactory;
 
+/**
+ * Configuration class for the application.
+ * This class defines beans that will be managed by the Spring application.
+ */
 @Configuration
 public class AppConfig {
 
+    /**
+     * Defines a StorageService bean responsible for files/pictures storage.
+     * Here we uses a StorageService implementation : Cloudinary.
+     * The service is configured with properties from AppConfigProperties.
+     *
+     * @param appConfigProperties Configuration properties for the Storage service
+     * @return a StorageService specific implementation
+     */
     @Bean
     public StorageService storageService(AppConfigProperties appConfigProperties) {
         return new CloudinaryStorageService(
@@ -29,16 +41,38 @@ public class AppConfig {
                 appConfigProperties.getCloudinaryapisecret());
     }
 
+    /**
+     * Defines a JwtFactory bean for handling JSON Web Token (JWT) creation and
+     * validation.
+     * Here we uses an HMAC-based JWT factory configured with properties from
+     * AppConfigProperties.
+     *
+     * @param appConfigProperties Configuration properties
+     * @return a JwtFactory specific implementation
+     */
     @Bean
     public JwtFactory jwtFactory(AppConfigProperties appConfigProperties) {
         return new HmacJwtFactory(appConfigProperties.getJwtsecretkey());
     }
 
+    /**
+     * Defines a UserManagementService bean that handles user management operations.
+     * Here we uses a UserManagementService implementation : DefaultUserManagementService.
+     *
+     * @param userRepository  Repository for accessing user data.
+     * @param passwordEncoder Encoder for hashing passwords.
+     * @return a UserManagementService specific implementation
+     */
     @Bean
     public UserManagementService userManagementService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return new DefaultUserManagementService(userRepository, passwordEncoder);
     }
 
+    /**
+     * Defines a ModelMapper bean used to convert entity objects to DTOs (vice-versa)
+     *
+     * @return A configured ModelMapper instance.
+     */
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();

@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
+import fr.jerem.chaotop_backend.model.UserEntity;
 import fr.jerem.chaotop_backend.model.RentalEntity;
 import fr.jerem.chaotop_backend.repository.RentalRepository;
 import fr.jerem.chaotop_backend.repository.UserRepository;
@@ -60,7 +60,7 @@ public class SampleConfig {
                     String sampleUserclearPassword = generateSecurePassword();
                     String sampleUserhashedPassword = passwordEncoder.encode(sampleUserclearPassword);
 
-                    DataBaseEntityUser sampleEntityUser = new DataBaseEntityUser();
+                    UserEntity sampleEntityUser = new UserEntity();
                     sampleEntityUser.setEmail(sampleUserMail);
                     sampleEntityUser.setPassword(sampleUserhashedPassword);
                     sampleEntityUser.setName(sampleUserName);

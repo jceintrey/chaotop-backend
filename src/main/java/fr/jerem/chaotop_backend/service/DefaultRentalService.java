@@ -14,7 +14,7 @@ import fr.jerem.chaotop_backend.configuration.AppConfig;
 import fr.jerem.chaotop_backend.dto.RentalResponse;
 import fr.jerem.chaotop_backend.exception.RentalNotFoundException;
 import fr.jerem.chaotop_backend.exception.UserNotFoundException;
-import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
+import fr.jerem.chaotop_backend.model.UserEntity;
 import fr.jerem.chaotop_backend.model.RentalEntity;
 import fr.jerem.chaotop_backend.repository.RentalRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -64,16 +64,6 @@ public class DefaultRentalService implements RentalService {
         this.storageService = storageService;
     }
 
-    /**
-     * Retrieves all rentals.
-     * <p>
-     * This method retrieves all rental entities from the database and maps them to
-     * DTOs
-     * in order to be used by controller.
-     * </p>
-     * 
-     * @return a list of {@link RentalResponse} objects representing all rentals
-     */
     @Override
     public List<RentalResponse> getAllRentals() {
 
@@ -87,18 +77,6 @@ public class DefaultRentalService implements RentalService {
 
     }
 
-    /**
-     * Retrieves a rental by its ID.
-     * 
-     * <p>
-     * This method is intented to be used by controller.
-     * </p>
-     * 
-     * @param id the ID of the rental to retrieve
-     * @return an {@link Optional} containing a {@link RentalResponse} if found,
-     *         otherwise empty
-     * @throws IllegalArgumentException if the provided ID is {@code null}
-     */
     @Override
     public RentalResponse getRentalById(Long id) {
         if (id == null) {
@@ -111,15 +89,6 @@ public class DefaultRentalService implements RentalService {
         return modelMapper.map(rentalEntity, RentalResponse.class);
     }
 
-    /**
-     * Retrieves a rental entity by its ID.
-     * <p>
-     * This method should only be used by other services.
-     * </p>
-     * 
-     * @param id the ID of the rental entity
-     * @return an {@link Optional} containing the {@link RentalEntity} if found
-     */
     @Override
     public Optional<RentalEntity> getRentalEntityById(Long id) {
         return rentalRepository.findById(id);
@@ -129,12 +98,12 @@ public class DefaultRentalService implements RentalService {
     public Integer createRental(String name, double surface, BigDecimal price, MultipartFile picture,
             String description, String usermail) {
 
-        Optional<DataBaseEntityUser> optionalDataBaseEntityUser = userManagementService.getUserEntityByMail(usermail);
+        Optional<UserEntity> optionalDataBaseEntityUser = userManagementService.getUserEntityByMail(usermail);
         if (optionalDataBaseEntityUser.isEmpty())
             throw new UserNotFoundException("User with id " + usermail + "not found",
                     "DefaultRentalService.createRental");
 
-        DataBaseEntityUser datatBaseEntityUser = optionalDataBaseEntityUser.get();
+        UserEntity datatBaseEntityUser = optionalDataBaseEntityUser.get();
 
         String pictureUrl = storageService.uploadImage(picture);
 

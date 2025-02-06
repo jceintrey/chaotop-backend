@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import fr.jerem.chaotop_backend.dto.MessageResponse;
 import fr.jerem.chaotop_backend.exception.RentalNotFoundException;
 import fr.jerem.chaotop_backend.exception.UserNotFoundException;
-import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
+import fr.jerem.chaotop_backend.model.UserEntity;
 import fr.jerem.chaotop_backend.model.MessageEntity;
 import fr.jerem.chaotop_backend.model.RentalEntity;
 import fr.jerem.chaotop_backend.repository.MessageRepository;
@@ -29,6 +29,16 @@ public class DefaultMessageService implements MessageService {
     private final RentalService rentalService;
     private final UserManagementService userManagementService;
 
+    /**
+     * Constructs a {@code DefaultMessageService} with the necessary dependencies.
+     * 
+     * @param messageRepository     the repository for managing messages-related
+     *                              operations
+     * @param userManagementService the service for managing user-related operations
+     * @param rentalService         the service for managing rental-related
+     *                              operations
+     * 
+     */
     public DefaultMessageService(
             MessageRepository messageRepository,
             RentalService rentalService,
@@ -43,11 +53,11 @@ public class DefaultMessageService implements MessageService {
         // get user Entity
         log.debug("Try to create a new message, userId: " + userId + " and rentalId " + rentalId);
 
-        Optional<DataBaseEntityUser> optionalUserEntity = userManagementService.getUserEntityById(userId);
+        Optional<UserEntity> optionalUserEntity = userManagementService.getUserEntityById(userId);
         if (optionalUserEntity.isEmpty())
             throw new UserNotFoundException("User with id " + userId + " not found",
                     "DefaultMessageService.createMessage");
-        DataBaseEntityUser userEntity = optionalUserEntity.get();
+        UserEntity userEntity = optionalUserEntity.get();
 
         // get rental Entity
         Optional<RentalEntity> optionalRentalEntity = rentalService.getRentalEntityById(rentalId);

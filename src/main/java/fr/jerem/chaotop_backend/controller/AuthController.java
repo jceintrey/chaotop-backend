@@ -22,9 +22,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Controller class used for authentication purpose
+ * Controller class used for authentication purpose.
  * <p>
- * This class implements the authentication endpoints of the application
+ * This class implements the authentication endpoints of the application.
  * </p>
  * <p>
  * - {@link AuthenticationService} service that process the user authentication
@@ -108,7 +108,7 @@ public class AuthController {
         }
 
         try {
-            UserProfileResponse meResponse = userManagementService.getUserProfile(email);
+            UserProfileResponse meResponse = userManagementService.getUserProfilebyEmail(email);
 
             if (meResponse.getEmail().isEmpty()) {
                 log.error("Error fetching user details for email: {}", email);

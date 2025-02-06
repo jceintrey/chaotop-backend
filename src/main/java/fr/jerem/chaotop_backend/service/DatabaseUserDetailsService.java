@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import fr.jerem.chaotop_backend.model.AppUserDetails;
-import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
+import fr.jerem.chaotop_backend.model.UserEntity;
 import fr.jerem.chaotop_backend.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
  * 
  * <p>
  * The {@code loadUserByUsername} method is implemented to load the user from
- * the repository if exist in a {@link DataBaseEntityUser} java object
+ * the repository if exist in a {@link UserEntity} java object
  * </p>
  * 
  * 
@@ -47,7 +47,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        DataBaseEntityUser user = userRepository.findByEmail(email)
+        UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User with email: " + email + "not found"));
 
         return new AppUserDetails(user);

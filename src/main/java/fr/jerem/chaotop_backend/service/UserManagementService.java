@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import fr.jerem.chaotop_backend.dto.UserProfileResponse;
-import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
+import fr.jerem.chaotop_backend.model.UserEntity;
 
 /**
  * Service interface for managing users.
@@ -35,32 +35,22 @@ public interface UserManagementService {
      * This object should be cast to its implementation.
      * 
      * @param {@link String} the email.
-     * @return an {@link Optional} containing the {@link UserDetails} if found,
-     *         otherwise empty.
+     * @return a {@link UserDetails}
      */
     public UserDetails getUserbyEmail(String email);
 
     /**
-     * Retrieves a {@link UserDetails} object by id.
-     * This object should be cast to its implementation.
-     * 
-     * @param {@link Long} the userId.
-     * @return an {@link Optional} containing the {@link UserDetails} if found,
-     *         otherwise empty.
-     */
-    public UserProfileResponse getUserProfilebyId(Long userId);
-
-    /**
-     * Retrieves the user uniq identifier by email.
+     * Retrieves the user uniq identifier by their email.
      * 
      * @param {@link String} the email.
-     * @return an {@link Optional} containing the {@link UserDetails} if found,
+     * @return an {@link Optional} containing the id if found,
      *         otherwise empty.
      */
     public Optional<Long> getUserId(String email);
 
     /**
-     * Retrieves the user detailed informations.
+     * Retrieves the user detailed informations by their email.
+     * 
      * This method is intented to be used by the controller as it can easily
      * return the {@link UserProfileResponse}
      * 
@@ -68,7 +58,18 @@ public interface UserManagementService {
      * @return an {@link Optional} containing the {@link UserDetails} if found,
      *         otherwise empty.
      */
-    public UserProfileResponse getUserProfile(String email);
+    public UserProfileResponse getUserProfilebyEmail(String email);
+
+    /**
+     * Retrieves a UserProfileResponse by their Id.
+     * 
+     * This method is intented to be used by the controller as it can easily
+     * return the {@link UserProfileResponse}
+     * 
+     * @param {@link Long} the userId.
+     * @return the {@link UserProfileResponse}
+     */
+    public UserProfileResponse getUserProfilebyId(Long userId);
 
     /**
      * Return true if the user is already present in the Database.
@@ -80,28 +81,28 @@ public interface UserManagementService {
     public boolean isEmailAlreadyUsed(String email);
 
     /**
-     * Retrieves the {@link DataBaseEntityUser} by their Id.
+     * Retrieves the {@link UserEntity} by their Id.
      * 
      * This method is intented to be used by other services and not
      * by controllers themselves in order to respect the layer model.
      * 
      * @param {@link Long} id of the user
-     * @return an {@link Optional} containing the {@link DataBaseEntityUser} if
+     * @return an {@link Optional} containing the {@link UserEntity} if
      *         found,
      *         otherwise empty.
      */
-    public Optional<DataBaseEntityUser> getUserEntityById(Long userId);
+    public Optional<UserEntity> getUserEntityById(Long userId);
 
     /**
-     * Retrieves the {@link DataBaseEntityUser} by their Email.
+     * Retrieves the {@link UserEntity} by their Email.
      * 
      * This method is intented to be used by other services and not
      * by controllers themselves in order to respect the layer model.
      * 
      * @param {@link String} email of the user
-     * @return an {@link Optional} containing the {@link DataBaseEntityUser} if
+     * @return an {@link Optional} containing the {@link UserEntity} if
      *         found,
      *         otherwise empty.
      */
-    public Optional<DataBaseEntityUser> getUserEntityByMail(String email);
+    public Optional<UserEntity> getUserEntityByMail(String email);
 }

@@ -34,7 +34,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class DataBaseEntityUser {
+public class UserEntity {
 
     @Id
     @Column(name = "id")
