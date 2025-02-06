@@ -1,7 +1,5 @@
 package fr.jerem.chaotop_backend.controller;
 
-import java.util.Optional;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -101,15 +99,14 @@ public class AuthController {
     public ResponseEntity<UserProfileResponse> getUserInformations() {
         log.debug("@GetMapping(\"/me\")");
 
-        Optional<String> optionalAuthenticatedUserEmail = authenticationService.getAuthenticatedUserEmail();
+        String email = authenticationService.getAuthenticatedUserEmail();
 
-        if (optionalAuthenticatedUserEmail.isEmpty()) {
+        if (email == "") {
             log.error("No authenticated user found.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new UserProfileResponse(null, "", "", "", ""));
         }
 
-        String email = optionalAuthenticatedUserEmail.get();
         try {
             UserProfileResponse meResponse = userManagementService.getUserProfile(email);
 
@@ -148,32 +145,23 @@ public class AuthController {
 
     })
     @PostMapping("/register")
-    public ResponseEntity<TokenResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<TokenResponse> register(@RequestBody RegisterRequest request) throws Exception {
         log.debug("@PostMapping(\"/register\") - RegisterRequest: {}", request);
 
-        try {
-            // Check if the email is already taken
-            if (userManagementService.isEmailAlreadyUsed(request.getEmail())) {
-                log.error("Email {} is already used.", request.getEmail());
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new TokenResponse(""));
-            }
-            // Create user with userDetails implementation
-            userManagementService.createUser(
-                    request.getEmail(),
-                    request.getPassword(),
-                    request.getName());
+        // Create user with userDetails implementation
+        userManagementService.createUser(
+                request.getEmail(),
+                request.getPassword(),
+                request.getName());
 
-            // Authenticate if user is created
-            LoginRequest loginRequest = new LoginRequest(request.getEmail(), request.getPassword());
-            TokenResponse tokenResponse = authenticationService.authenticate(loginRequest);
+        // Authenticate if user is created
+        LoginRequest loginRequest = new LoginRequest(request.getEmail(), request.getPassword());
+        TokenResponse tokenResponse = authenticationService.authenticate(loginRequest);
 
-            log.debug("User created successfully: {}", request.getEmail());
+        log.debug("User created successfully: {}", request.getEmail());
 
-            return ResponseEntity.ok(tokenResponse);
-        } catch (Exception e) {
-            log.error("Error occurred during user registration: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new TokenResponse(""));
-        }
+        return ResponseEntity.ok(tokenResponse);
+
     }
 
 }

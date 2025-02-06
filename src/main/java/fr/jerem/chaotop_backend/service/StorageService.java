@@ -1,8 +1,9 @@
 package fr.jerem.chaotop_backend.service;
 
-import java.io.IOException;
 
 import org.springframework.web.multipart.MultipartFile;
+
+import fr.jerem.chaotop_backend.exception.ImageUploadException;
 
 /**
  * Interface for storing images
@@ -10,5 +11,5 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface StorageService {
     
-    public String uploadImage(MultipartFile file) throws IOException;
+    public String uploadImage(MultipartFile file) throws ImageUploadException ;
 }

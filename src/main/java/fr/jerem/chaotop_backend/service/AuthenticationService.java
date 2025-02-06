@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import fr.jerem.chaotop_backend.dto.LoginRequest;
 import fr.jerem.chaotop_backend.dto.TokenResponse;
+import fr.jerem.chaotop_backend.exception.AuthenticatedUserNotFound;
 
 /**
  * Service responsible for handling user authentication and token generation.
@@ -72,14 +73,15 @@ public class AuthenticationService {
      * @return an {@link Optional} containing the authenticated user's email, or
      *         empty if no user is authenticated
      */
-    public Optional<String> getAuthenticatedUserEmail() {
+    public String getAuthenticatedUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated()) {
-            return Optional.ofNullable(authentication.getName());
+            return authentication.getName();
+        } else {
+            throw new AuthenticatedUserNotFound("No authenticated user found in Security Context",
+                    "AuhtenticationService.getAuthenticatedUserEmail");
         }
-
-        return Optional.empty();
     }
 
 }

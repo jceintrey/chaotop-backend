@@ -1,5 +1,7 @@
 package fr.jerem.chaotop_backend.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -23,5 +25,5 @@ public interface UserRepository extends JpaRepository<DataBaseEntityUser, Intege
      * @return the {@link DataBaseEntityUser} associated with the given email address,
      *         or {@code null} if no user is found
      */
-    public DataBaseEntityUser findByEmail(String email);
+    Optional<DataBaseEntityUser> findByEmail(String email);
 }
