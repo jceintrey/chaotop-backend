@@ -46,7 +46,7 @@ public class MessageEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private DataBaseEntityUser user;
+    private UserEntity user;
 
     @Column(name = "message", length = 2000)
     @NotBlank(message = "Message cannot be empty")

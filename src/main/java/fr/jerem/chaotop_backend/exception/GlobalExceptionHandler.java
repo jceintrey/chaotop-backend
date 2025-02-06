@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import fr.jerem.chaotop_backend.dto.ApiErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Global Exception Handler that listen for exceptions thrown from the application
+ * It returns ResponseEntity in a standardized response format.
+ * 
+ */
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {

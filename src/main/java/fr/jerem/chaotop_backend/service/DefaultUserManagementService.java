@@ -13,7 +13,7 @@ import fr.jerem.chaotop_backend.exception.InvalidUserDetailsException;
 import fr.jerem.chaotop_backend.exception.InvalidUserProfileException;
 import fr.jerem.chaotop_backend.exception.UserNotFoundException;
 import fr.jerem.chaotop_backend.model.AppUserDetails;
-import fr.jerem.chaotop_backend.model.DataBaseEntityUser;
+import fr.jerem.chaotop_backend.model.UserEntity;
 import fr.jerem.chaotop_backend.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,17 +47,6 @@ public class DefaultUserManagementService implements UserManagementService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    /**
-     * Creates a new user with the given credentials.
-     * <p>
-     * The password is hashed before being stored in the database.
-     * </p>
-     *
-     * @param email         the email of the new user
-     * @param plainPassword the raw password before encoding
-     * @param name          the name of the new user
-     * @return an {@link AppUserDetails} object representing the newly created user
-     */
     @Override
     public AppUserDetails createUser(String email, String plainPassword, String name) {
 
@@ -66,7 +55,7 @@ public class DefaultUserManagementService implements UserManagementService {
                     "DefaultUserManagementService.createUser");
         }
 
-        DataBaseEntityUser user = new DataBaseEntityUser();
+        UserEntity user = new UserEntity();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(plainPassword));
         user.setName(name);
@@ -90,17 +79,8 @@ public class DefaultUserManagementService implements UserManagementService {
                 .map(user -> user.getId().longValue());
     }
 
-    /**
-     * Get the user Informations and build a {@link UserProfileResponse}
-     * 
-     * @param String email of the user.
-     * 
-     * @return {@link UserProfileResponse} the DTO response containing the user
-     *         informations.
-     * 
-     */
     @Override
-    public UserProfileResponse getUserProfile(String email) {
+    public UserProfileResponse getUserProfilebyEmail(String email) {
         UserDetails userDetails = getUserbyEmail(email);
 
         if (!(userDetails instanceof AppUserDetails)) {
@@ -126,13 +106,13 @@ public class DefaultUserManagementService implements UserManagementService {
     }
 
     @Override
-    public Optional<DataBaseEntityUser> getUserEntityById(Long userId) {
+    public Optional<UserEntity> getUserEntityById(Long userId) {
         return userRepository.findById(userId.intValue());
 
     }
 
     @Override
-    public Optional<DataBaseEntityUser> getUserEntityByMail(String email) {
+    public Optional<UserEntity> getUserEntityByMail(String email) {
         return userRepository.findByEmail(email);
 
     }
@@ -140,21 +120,21 @@ public class DefaultUserManagementService implements UserManagementService {
     @Override
     public UserProfileResponse getUserProfilebyId(Long userId) {
 
-        Optional<DataBaseEntityUser> optionalUserEntity = getUserEntityById(userId);
+        Optional<UserEntity> optionalUserEntity = getUserEntityById(userId);
 
         // check if empty
         if (optionalUserEntity.isEmpty())
             throw new UserNotFoundException("User with id " + userId + "not found",
                     "DefaultUserManagementService.getUserEntityByMail");
 
-        DataBaseEntityUser user = optionalUserEntity.get();
+        UserEntity user = optionalUserEntity.get();
         // check if email field is set
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             throw new InvalidUserProfileException("User with ID " + userId + " has an invalid email.",
                     "DefaultUserManagementService.getUserProfilebyId");
         }
 
-        return getUserProfile(user.getEmail());
+        return getUserProfilebyEmail(user.getEmail());
     }
 
 }

@@ -18,9 +18,9 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class AppUserDetails implements UserDetails {
 
-    private final DataBaseEntityUser user;
+    private final UserEntity user;
 
-    public AppUserDetails(DataBaseEntityUser user) {
+    public AppUserDetails(UserEntity user) {
         this.user = user;
     }
 

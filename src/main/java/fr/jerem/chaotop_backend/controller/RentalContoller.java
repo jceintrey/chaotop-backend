@@ -111,8 +111,6 @@ public class RentalContoller {
      * 
      * <p>
      * Use {@link AuthenticationService} to retrieve the authenticated user.
-     * Use {@link userManagementService} to retrieve detailed informations for the
-     * user.
      * Use {@link rentalService} to create the new rental.
      * </p>
      * 

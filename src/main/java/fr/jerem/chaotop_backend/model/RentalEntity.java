@@ -41,7 +41,7 @@ public class RentalEntity {
             BigDecimal price,
             String picture,
             String description,
-            DataBaseEntityUser owner,
+            UserEntity owner,
             LocalDateTime createdAt,
             LocalDateTime updatedAt) {
 
@@ -77,7 +77,7 @@ public class RentalEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false) // Définir la clé étrangère vers USERS
-    private DataBaseEntityUser owner;
+    private UserEntity owner;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;

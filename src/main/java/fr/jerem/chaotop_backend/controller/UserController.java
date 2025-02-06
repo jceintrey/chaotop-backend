@@ -61,7 +61,6 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
 
     })
-
     @GetMapping("/{id}")
     public ResponseEntity<UserProfileResponse> getUserById(@PathVariable("id") final Long id) {
         UserProfileResponse userProfileResponse = userManagementService.getUserProfilebyId(id);
