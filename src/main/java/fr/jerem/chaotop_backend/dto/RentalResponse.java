@@ -3,6 +3,8 @@ package fr.jerem.chaotop_backend.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,10 +36,13 @@ public class RentalResponse {
     @Schema(description = "Detailed description of the rental", example = "A charming tiny house with 2 cozy bedrooms, a fully equipped kitchen, ...")
     private String description;
     @Schema(description = "Owner Id of the rental")
+    @JsonProperty("owner_id")
     private Integer owner;
     @Schema(description = "Timestamp date of creation")
+    @JsonProperty("created_at")
     private LocalDateTime createdAt;
     @Schema(description = "Timestamp date of last update")
+    @JsonProperty("updated_at")
     private LocalDateTime updatedAt;
 
 }
